@@ -1,7 +1,14 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": ["config:recommended"],
+  "dependencyDashboardApproval": false,
   "packageRules": [
+    {
+      "description": "Auto-create PRs for candrii charts",
+      "matchPackagePatterns": ["candrii/charts"],
+      "dependencyDashboardApproval": false,
+      "automerge": false
+    },
     {
       "description": "Group all victoriametrics chart updates",
       "matchPackagePatterns": ["victoriametrics", "victoria-metrics"],
