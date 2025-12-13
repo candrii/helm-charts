@@ -1,0 +1,79 @@
+#!/bin/bash
+# Pre-push hook: Prevent push if chart content changed but version not bumped
+# Install: git config core.hooksPath .githooks
+
+set -e
+
+REMOTE="$1"
+URL="$2"
+
+echo "Checking chart version bumps..."
+
+# Read stdin for refs being pushed
+while read local_ref local_sha remote_ref remote_sha; do
+    # Skip delete operations
+    if [ "$local_sha" = "0000000000000000000000000000000000000000" ]; then
+        continue
+    fi
+
+    # For new branches, compare against remote main/master
+    if [ "$remote_sha" = "0000000000000000000000000000000000000000" ]; then
+        # Try to get remote default branch
+        remote_sha=$(git rev-parse origin/main 2>/dev/null || git rev-parse origin/master 2>/dev/null || echo "")
+        if [ -z "$remote_sha" ]; then
+            echo "New repository, skipping version check"
+            continue
+        fi
+    fi
+
+    # Get changed files in charts directory
+    CHANGED_FILES=$(git diff --name-only "$remote_sha" "$local_sha" -- "charts/" 2>/dev/null || true)
+
+    if [ -z "$CHANGED_FILES" ]; then
+        continue
+    fi
+
+    # Get unique chart directories that have changes
+    CHANGED_CHARTS=$(echo "$CHANGED_FILES" | grep -v "^$" | cut -d'/' -f1-2 | sort -u)
+
+    ERRORS=""
+
+    for chart in $CHANGED_CHARTS; do
+        # Skip if not a valid chart directory
+        if [ ! -f "$chart/Chart.yaml" ]; then
+            continue
+        fi
+
+        # Check if Chart.yaml was modified
+        CHART_YAML_CHANGED=$(echo "$CHANGED_FILES" | grep -E "^${chart}/Chart\.yaml$" || true)
+
+        # Get non-Chart.yaml changes in this chart
+        OTHER_CHANGES=$(echo "$CHANGED_FILES" | grep -E "^${chart}/" | grep -v "Chart\.yaml" || true)
+
+        if [ -n "$OTHER_CHANGES" ]; then
+            if [ -z "$CHART_YAML_CHANGED" ]; then
+                ERRORS="${ERRORS}\n  - ${chart}: content changed but Chart.yaml not modified"
+            else
+                # Chart.yaml changed, verify version line was bumped
+                VERSION_CHANGED=$(git diff "$remote_sha" "$local_sha" -- "$chart/Chart.yaml" | grep -E "^\+version:" || true)
+                if [ -z "$VERSION_CHANGED" ]; then
+                    ERRORS="${ERRORS}\n  - ${chart}: Chart.yaml modified but version not bumped"
+                fi
+            fi
+        fi
+    done
+
+    if [ -n "$ERRORS" ]; then
+        echo "ERROR: Chart changes detected without version bump:"
+        echo -e "$ERRORS"
+        echo ""
+        echo "Please bump the version in Chart.yaml for each changed chart."
+        echo "Example: version: \"0.0.1\" -> version: \"0.0.2\""
+        echo ""
+        echo "To bypass this check (not recommended): git push --no-verify"
+        exit 1
+    fi
+done
+
+echo "All changed charts have version bumps"
+exit 0
