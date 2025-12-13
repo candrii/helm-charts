@@ -17,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
@@ -27,9 +27,9 @@ jobs:
           git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
 
       - name: Set up Helm
-        uses: azure/setup-helm@v4.2.0
+        uses: azure/setup-helm@v4.3.1
         with:
-          version: v3.17.0
+          version: 4.0.4
 
       - name: Run chart-releaser
         uses: helm/chart-releaser-action@v1.7.0
@@ -38,21 +38,16 @@ jobs:
         env:
           CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
 
-      - name: Login to GitHub Container Registry
-        uses: docker/login-action@v1
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Push Charts to GHCR
         run: |
-          ls -lsaR
-          set -x
+          if [ ! -d .cr-release-packages ]; then
+            echo "No charts to release"
+            exit 0
+          fi
+          helm registry login ghcr.io -u "${{ github.actor }}" -p "${{ secrets.GITHUB_TOKEN }}"
           for pkg in .cr-release-packages/*; do
             if [ -z "${pkg:-}" ]; then
               break
             fi
-
             helm push "${pkg}" oci://ghcr.io/${GITHUB_REPOSITORY_OWNER,,}/charts
           done
