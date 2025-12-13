@@ -1,0 +1,51 @@
+name: Update README Chart Versions
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "charts/**/Chart.yaml"
+
+permissions:
+  contents: write
+
+jobs:
+  update-readme:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Update README table
+        run: |
+          # Build new table
+          TABLE="| Chart | Version | Description |\n|-------|---------|-------------|\n"
+
+          for chart_yaml in charts/*/Chart.yaml; do
+            CHART_DIR=$(dirname "$chart_yaml")
+            CHART_NAME=$(basename "$CHART_DIR")
+            VERSION=$(grep '^version:' "$chart_yaml" | sed 's/version:[[:space:]]*"\{0,1\}\([^"]*\)"\{0,1\}/\1/')
+            DESCRIPTION=$(grep '^description:' "$chart_yaml" | sed 's/description:[[:space:]]*//')
+            TABLE="${TABLE}| [${CHART_NAME}](${CHART_DIR}/) | ${VERSION} | ${DESCRIPTION} |\n"
+          done
+
+          # Replace table in README between markers
+          awk -v table="$TABLE" '
+            /^## Charts$/ { print; getline; print; in_table=1; next }
+            in_table && /^$/ { printf "%s", table; in_table=0 }
+            in_table && /^\|/ { next }
+            { print }
+          ' README.md > README.tmp && mv README.tmp README.md
+
+      - name: Commit changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add README.md
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "docs: update chart versions in README"
+            git push
+          fi
