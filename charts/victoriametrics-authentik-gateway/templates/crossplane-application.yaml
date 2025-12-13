@@ -1,0 +1,27 @@
+{{- if and .Values.enabled .Values.crossplane.application.enabled }}
+apiVersion: application.authentik.crossplane.io/v1alpha1
+kind: Application
+metadata:
+  name: {{ .Values.crossplane.application.name }}
+  namespace: {{ .Values.namespace }}
+spec:
+  forProvider:
+    name: {{ .Values.crossplane.application.name }}
+    slug: {{ .Values.crossplane.application.slug }}
+    {{- if .Values.crossplane.application.group }}
+    group: {{ .Values.crossplane.application.group }}
+    {{- end }}
+    openInNewTab: {{ .Values.crossplane.application.openInNewTab }}
+    policyEngineMode: {{ .Values.crossplane.application.policyEngineMode }}
+    {{- if .Values.crossplane.application.metaLaunchUrl }}
+    metaLaunchUrl: {{ .Values.crossplane.application.metaLaunchUrl }}
+    {{- end }}
+    {{- if .Values.crossplane.application.metaDescription }}
+    metaDescription: {{ .Values.crossplane.application.metaDescription | quote }}
+    {{- end }}
+    protocolProviderSelector:
+      matchLabels:
+        app.kubernetes.io/name: {{ .Values.crossplane.provider.name }}
+  providerConfigRef:
+    name: {{ .Values.crossplane.providerConfigRef }}
+{{- end }}

@@ -1,0 +1,13 @@
+apiVersion: v2
+name: argocd-victoriametrics-stack
+description: ArgoCD Application to deploy Victoria Metrics stack with operator
+type: application
+version: "0.0.1"
+appVersion: "1.0.0"
+keywords:
+  - monitoring
+  - victoriametrics
+  - victorialogs
+  - argocd
+  - operator
+  - observability

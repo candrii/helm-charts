@@ -1,0 +1,25 @@
+{{- if and .Values.enabled .Values.httpRoute.enabled .Values.httpRoute.authFilter.enabled }}
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: SecurityPolicy
+metadata:
+  name: {{ .Values.httpRoute.name }}-auth
+  namespace: {{ .Values.namespace }}
+spec:
+  targetRef:
+    group: gateway.networking.k8s.io
+    kind: HTTPRoute
+    name: {{ .Values.httpRoute.name }}
+  extAuth:
+    http:
+      backendRef:
+        name: {{ .Values.outpostDeployment.name }}
+        port: {{ .Values.outpostDeployment.service.ports.http }}
+      path: /outpost.goauthentik.io/auth/nginx
+      headersToBackend:
+        - Cookie
+        - Authorization
+        - X-Forwarded-For
+        - X-Forwarded-Host
+        - X-Forwarded-Proto
+        - X-Original-URL
+{{- end }}

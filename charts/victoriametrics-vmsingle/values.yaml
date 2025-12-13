@@ -1,0 +1,39 @@
+# =============================================================================
+# VICTORIA METRICS VMSINGLE
+# VMSingle CRD for Victoria Metrics single instance
+# =============================================================================
+
+# Enable/disable VMSingle deployment
+enabled: true
+
+# VMSingle name
+name: monitoring
+
+# Namespace for deployment
+namespace: monitoring
+
+# Data retention period
+retentionPeriod: "21d"
+
+# Number of replicas
+replicaCount: 1
+
+# Storage configuration
+storage:
+  size: 30Gi
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: ""  # Use default if empty
+
+# Resource requests and limits
+resources:
+  requests:
+    memory: 500Mi
+    cpu: 1m
+  limits: {}
+
+# Extra arguments for VMSingle
+extraArgs:
+  search.maxUniqueTimeseries: "5000000"
+  search.maxQueryDuration: "180s"
+  search.maxConcurrentRequests: "16"

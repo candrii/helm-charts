@@ -1,0 +1,33 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended"],
+  "packageRules": [
+    {
+      "description": "Group all victoriametrics chart updates",
+      "matchPackagePatterns": ["victoriametrics", "victoria-metrics"],
+      "groupName": "victoriametrics charts"
+    }
+  ],
+  "customManagers": [
+    {
+      "customType": "regex",
+      "description": "Track OCI Helm charts from candrii",
+      "fileMatch": ["\\.yaml$"],
+      "matchStrings": [
+        "repoURL:\\s*oci://ghcr\\.io/(?<depName>candrii/charts/[a-z0-9-]+)\\n\\s+version:\\s*[\"']?(?<currentValue>[^\"'\\s]+)[\"']?"
+      ],
+      "datasourceTemplate": "docker",
+      "registryUrlTemplate": "https://ghcr.io"
+    },
+    {
+      "customType": "regex",
+      "description": "Track VictoriaMetrics operator OCI chart",
+      "fileMatch": ["\\.yaml$"],
+      "matchStrings": [
+        "repoURL:\\s*oci://ghcr\\.io/(?<depName>victoriametrics/helm-charts/[a-z0-9-]+)\\n\\s+version:\\s*[\"']?(?<currentValue>[^\"'\\s]+)[\"']?"
+      ],
+      "datasourceTemplate": "docker",
+      "registryUrlTemplate": "https://ghcr.io"
+    }
+  ]
+}

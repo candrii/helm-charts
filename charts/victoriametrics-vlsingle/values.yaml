@@ -1,0 +1,28 @@
+# =============================================================================
+# VICTORIA METRICS VLSINGLE
+# VLSingle CRD for Victoria Logs single instance
+# =============================================================================
+
+# Enable/disable VLSingle deployment
+enabled: true
+
+# VLSingle name
+name: monitoring
+
+# Namespace for deployment
+namespace: monitoring
+
+# Data retention period (days)
+retentionPeriod: "30"
+
+# Storage configuration
+storage:
+  size: 55Gi
+  storageClassName: ""  # Use default if empty
+
+# Resource requests and limits
+resources:
+  requests:
+    memory: 500Mi
+    cpu: 1m
+  limits: {}

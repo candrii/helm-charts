@@ -1,0 +1,27 @@
+{{- if and .Values.enabled .Values.outpostDeployment.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.outpostDeployment.name }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    app.kubernetes.io/name: {{ .Values.outpostDeployment.name }}
+    app.kubernetes.io/component: outpost
+spec:
+  type: {{ .Values.outpostDeployment.service.type }}
+  ports:
+    - name: http
+      port: {{ .Values.outpostDeployment.service.ports.http }}
+      targetPort: http
+      protocol: TCP
+    - name: https
+      port: {{ .Values.outpostDeployment.service.ports.https }}
+      targetPort: https
+      protocol: TCP
+    - name: metrics
+      port: {{ .Values.outpostDeployment.service.ports.metrics }}
+      targetPort: metrics
+      protocol: TCP
+  selector:
+    app.kubernetes.io/name: {{ .Values.outpostDeployment.name }}
+{{- end }}

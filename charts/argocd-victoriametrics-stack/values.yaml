@@ -1,0 +1,90 @@
+# =============================================================================
+# ARGOCD VICTORIAMETRICS STACK
+# ArgoCD Applications for deploying Victoria Metrics stack
+# =============================================================================
+
+# Common prefix for all HelmRelease names
+namePrefix: vm
+
+# ArgoCD project name
+project: default
+
+# Destination cluster name (use "in-cluster" for local)
+destinationCluster: in-cluster
+
+# Namespaces configuration
+namespaces:
+  # Namespace for Victoria Metrics operator
+  operator: cluster-operators
+  # Namespace for stack components (vmsingle, vlsingle, vmauth)
+  stack: monitoring
+
+# Sync policy for all applications
+syncPolicy:
+  automated:
+    prune: false
+    selfHeal: true
+  syncOptions:
+    - CreateNamespace=true
+
+# =============================================================================
+# VICTORIA METRICS OPERATOR
+# =============================================================================
+operator:
+  enabled: true
+  chart:
+    # OCI registry URL
+    repoURL: oci://ghcr.io/victoriametrics/helm-charts/victoria-metrics-operator
+    version: "0.57.1"
+  # Additional values to pass to the operator chart
+  values: {}
+
+# =============================================================================
+# VMSINGLE
+# =============================================================================
+vmsingle:
+  enabled: true
+  chart:
+    # OCI registry URL
+    repoURL: oci://ghcr.io/candrii/charts/victoriametrics-vmsingle
+    version: "0.1.0"
+    # Override chart name in child chart (removes victoriametrics prefix)
+    nameOverride: vmsingle
+  # Sync wave for ordering (-1 deploys after operator)
+  syncWave: "-1"
+
+# =============================================================================
+# VLSINGLE
+# =============================================================================
+vlsingle:
+  enabled: true
+  chart:
+    repoURL: oci://ghcr.io/candrii/charts/victoriametrics-vlsingle
+    version: "0.1.0"
+    # Override chart name in child chart (removes victoriametrics prefix)
+    nameOverride: vlsingle
+  syncWave: "-1"
+
+# =============================================================================
+# VMAUTH
+# =============================================================================
+vmauth:
+  enabled: true
+  chart:
+    repoURL: oci://ghcr.io/candrii/charts/victoriametrics-vmauth
+    version: "0.1.0"
+    # Override chart name in child chart (removes victoriametrics prefix)
+    nameOverride: vmauth
+  syncWave: "0"
+
+# =============================================================================
+# AUTHENTIK GATEWAY (optional)
+# =============================================================================
+authentikGateway:
+  enabled: false
+  chart:
+    repoURL: oci://ghcr.io/candrii/charts/victoriametrics-authentik-gateway
+    version: "0.1.0"
+    # Override chart name in child chart (removes victoriametrics prefix)
+    nameOverride: authentik-gateway
+  syncWave: "1"

@@ -1,0 +1,45 @@
+{{- if .Values.enabled }}
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMAuth
+metadata:
+  name: {{ .Values.name }}
+  namespace: {{ .Values.namespace }}
+spec:
+  selectAllByDefault: {{ .Values.selectAllByDefault }}
+  {{- if .Values.ingress.enabled }}
+  ingress:
+    class_name: {{ .Values.ingress.className }}
+    host: {{ .Values.ingress.host }}
+    {{- if .Values.ingress.annotations }}
+    annotations:
+      {{- toYaml .Values.ingress.annotations | nindent 6 }}
+    {{- end }}
+  {{- end }}
+  {{- if .Values.urlMaps }}
+  unauthorizedUserAccessSpec:
+    url_map:
+      {{- range .Values.urlMaps }}
+      - src_paths:
+          {{- toYaml .srcPaths | nindent 10 }}
+        url_prefix:
+          {{- toYaml .urlPrefix | nindent 10 }}
+      {{- end }}
+  {{- end }}
+  {{- if .Values.resources }}
+  resources:
+    {{- if .Values.resources.requests }}
+    requests:
+      {{- toYaml .Values.resources.requests | nindent 6 }}
+    {{- end }}
+    {{- if .Values.resources.limits }}
+    limits:
+      {{- toYaml .Values.resources.limits | nindent 6 }}
+    {{- end }}
+  {{- end }}
+  {{- if .Values.extraArgs }}
+  extraArgs:
+    {{- range $key, $value := .Values.extraArgs }}
+    {{ $key }}: {{ $value | quote }}
+    {{- end }}
+  {{- end }}
+{{- end }}

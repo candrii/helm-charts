@@ -1,0 +1,25 @@
+{{- if .Values.enabled }}
+apiVersion: operator.victoriametrics.com/v1
+kind: VLSingle
+metadata:
+  name: {{ .Values.name }}
+  namespace: {{ .Values.namespace }}
+spec:
+  retentionPeriod: {{ .Values.retentionPeriod | quote }}
+  storage:
+    {{- if .Values.storage.storageClassName }}
+    storageClassName: {{ .Values.storage.storageClassName }}
+    {{- end }}
+    resources:
+      requests:
+        storage: {{ .Values.storage.size }}
+  resources:
+    {{- if .Values.resources.requests }}
+    requests:
+      {{- toYaml .Values.resources.requests | nindent 6 }}
+    {{- end }}
+    {{- if .Values.resources.limits }}
+    limits:
+      {{- toYaml .Values.resources.limits | nindent 6 }}
+    {{- end }}
+{{- end }}

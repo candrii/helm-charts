@@ -1,0 +1,15 @@
+apiVersion: v2
+name: victoriametrics-authentik-gateway
+description: Authentik outpost and Gateway HTTPRoute for Victoria Metrics SSO authentication
+type: application
+version: "0.0.1"
+appVersion: "1.0.0"
+keywords:
+  - monitoring
+  - victoriametrics
+  - authentik
+  - sso
+  - crossplane
+  - gateway
+  - outpost
+  - observability

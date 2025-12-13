@@ -1,0 +1,29 @@
+{{- if .Values.operator.enabled }}
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: {{ .Values.namePrefix }}-operator
+  namespace: argocd
+  labels:
+    {{- include "argocd-victoriametrics-stack.labels" . | nindent 4 }}
+  annotations:
+    argocd.argoproj.io/sync-wave: "-2"
+  finalizers:
+    - argoproj.io/resources-finalizer
+spec:
+  project: {{ .Values.project }}
+  source:
+    repoURL: {{ .Values.operator.chart.repoURL }}
+    targetRevision: {{ .Values.operator.chart.version }}
+    chart: .
+    helm:
+      {{- with .Values.operator.values }}
+      values: |
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+  destination:
+    name: {{ .Values.destinationCluster }}
+    namespace: {{ .Values.namespaces.operator }}
+  syncPolicy:
+    {{- toYaml .Values.syncPolicy | nindent 4 }}
+{{- end }}

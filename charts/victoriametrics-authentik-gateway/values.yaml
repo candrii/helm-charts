@@ -1,0 +1,162 @@
+# =============================================================================
+# VICTORIA METRICS AUTHENTIK GATEWAY
+# Authentik outpost and Gateway HTTPRoute for SSO authentication
+# =============================================================================
+
+# Enable/disable entire chart
+enabled: true
+
+# Namespace for deployment
+namespace: monitoring
+
+# =============================================================================
+# CROSSPLANE AUTHENTIK RESOURCES
+# =============================================================================
+crossplane:
+  # Provider config reference name
+  providerConfigRef: authentik
+
+  # Authentik Application registration
+  application:
+    enabled: true
+    name: victoriametrics
+    slug: victoriametrics
+    # Group name for authorization
+    group: ""
+    # Open in new tab
+    openInNewTab: false
+    # Policy engine mode: any, all
+    policyEngineMode: any
+    # Meta fields
+    metaLaunchUrl: ""
+    metaDescription: "Victoria Metrics Monitoring Stack"
+
+  # Authentik Provider (proxy provider for outpost)
+  provider:
+    enabled: true
+    name: victoriametrics-proxy
+    # Authorization flow slug
+    authorizationFlow: default-provider-authorization-implicit-consent
+    # External host URL (where users access the app)
+    externalHost: https://vm.hub.taxrise.lan
+    # Mode: forward_single, forward_domain, proxy
+    mode: forward_single
+    # Access token validity
+    accessTokenValidity: hours=24
+    # Skip path regex (optional)
+    skipPathRegex: ""
+
+  # Authentik Outpost registration
+  outpost:
+    enabled: true
+    name: victoriametrics-outpost
+    type: proxy
+    # Service connection (kubernetes service connection name)
+    serviceConnection: ""
+    # Config overrides
+    config:
+      authentik_host: ""
+      authentik_host_insecure: false
+      authentik_host_browser: ""
+      log_level: info
+      docker_labels: null
+      docker_map_ports: true
+      docker_network: null
+      container_image: null
+      kubernetes_replicas: 1
+      kubernetes_namespace: monitoring
+      kubernetes_ingress_annotations: {}
+      kubernetes_ingress_secret_name: ""
+      kubernetes_service_type: ClusterIP
+      kubernetes_disabled_components: []
+
+# =============================================================================
+# AUTHENTIK OUTPOST DEPLOYMENT
+# Deploy the actual outpost proxy
+# =============================================================================
+outpostDeployment:
+  enabled: true
+  name: vm-authentik-outpost
+  replicas: 1
+
+  image:
+    repository: ghcr.io/goauthentik/proxy
+    tag: "2024.10.4"
+    pullPolicy: IfNotPresent
+
+  # Authentik connection settings
+  authentik:
+    # URL to authentik instance
+    url: https://authentik.taxrise.lan
+    # Secret name containing AUTHENTIK_TOKEN
+    tokenSecretName: authentik-outpost-token
+    tokenSecretKey: token
+    # Insecure connection to authentik
+    insecure: false
+
+  # Resource requests and limits
+  resources:
+    requests:
+      memory: 64Mi
+      cpu: 10m
+    limits:
+      memory: 256Mi
+
+  # Service configuration
+  service:
+    type: ClusterIP
+    ports:
+      http: 9000
+      https: 9443
+      metrics: 9300
+
+  # Pod security context
+  securityContext:
+    runAsUser: 1000
+    runAsGroup: 1000
+    fsGroup: 1000
+
+  # Additional environment variables
+  extraEnv: []
+
+  # Node selector
+  nodeSelector: {}
+
+  # Tolerations
+  tolerations: []
+
+  # Affinity
+  affinity: {}
+
+# =============================================================================
+# GATEWAY HTTP ROUTE
+# Route traffic through the outpost for authentication
+# =============================================================================
+httpRoute:
+  enabled: true
+  name: vm-auth-route
+
+  # Parent gateway reference
+  parentRefs:
+    - name: internal-gateway
+      namespace: gateway-system
+      sectionName: https
+
+  # Hostnames to match
+  hostnames:
+    - vm.hub.taxrise.lan
+
+  # Backend service (VMAuth or direct to vmsingle)
+  backendService:
+    name: vmauth-monitoring
+    namespace: monitoring
+    port: 8427
+
+  # Authentication filter (forward auth to outpost)
+  authFilter:
+    enabled: true
+    # URL for forward auth requests
+    address: http://vm-authentik-outpost.monitoring.svc.cluster.local:9000/outpost.goauthentik.io/auth/nginx
+
+  # Additional rules
+  rules: []

@@ -1,0 +1,13 @@
+apiVersion: v2
+name: victoriametrics-vmsingle
+description: VMSingle CRD for Victoria Metrics single instance deployment
+type: application
+version: "0.0.2"
+appVersion: "1.0.0"
+keywords:
+  - monitoring
+  - victoriametrics
+  - vmsingle
+  - metrics
+  - observability
+
