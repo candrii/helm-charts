@@ -1,12 +1,18 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["config:recommended", ":dependencyDashboardApproval"],
+  "extends": ["config:recommended"],
   "dependencyDashboard": true,
+  "allowedPostUpgradeCommands": ["^./scripts/bump-chart-version\\.sh"],
   "packageRules": [
     {
-      "description": "Auto-create PRs for all custom manager deps (no approval)",
+      "description": "Auto-create PRs for custom manager deps and bump chart version",
       "matchManagers": ["custom.regex"],
-      "dependencyDashboardApproval": false
+      "dependencyDashboardApproval": false,
+      "postUpgradeTasks": {
+        "commands": ["./scripts/bump-chart-version.sh {{{packageFileDir}}}/values.yaml"],
+        "fileFilters": ["charts/**/Chart.yaml"],
+        "executionMode": "branch"
+      }
     },
     {
       "description": "Group all victoriametrics chart updates",
@@ -18,7 +24,7 @@
     {
       "customType": "regex",
       "description": "Track OCI Helm charts from candrii",
-      "fileMatch": ["\\.yaml$"],
+      "fileMatch": ["charts/.*/values\\.yaml$"],
       "matchStrings": [
         "repoURL:\\s*oci://ghcr\\.io/(?<depName>candrii/charts/[a-z0-9-]+)\\n\\s+version:\\s*[\"']?(?<currentValue>[^\"'\\s]+)[\"']?"
       ],
@@ -28,7 +34,7 @@
     {
       "customType": "regex",
       "description": "Track VictoriaMetrics operator OCI chart",
-      "fileMatch": ["\\.yaml$"],
+      "fileMatch": ["charts/.*/values\\.yaml$"],
       "matchStrings": [
         "repoURL:\\s*oci://ghcr\\.io/(?<depName>victoriametrics/helm-charts/[a-z0-9-]+)\\n\\s+version:\\s*[\"']?(?<currentValue>[^\"'\\s]+)[\"']?"
       ],
