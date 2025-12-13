@@ -47,7 +47,7 @@ vmsingle:
   chart:
     # OCI registry URL
     repoURL: oci://ghcr.io/candrii/charts/victoriametrics-vmsingle
-    version: "0.1.0"
+    version: "0.0.1"
     # Override chart name in child chart (removes victoriametrics prefix)
     nameOverride: vmsingle
   # Sync wave for ordering (-1 deploys after operator)
@@ -60,7 +60,7 @@ vlsingle:
   enabled: true
   chart:
     repoURL: oci://ghcr.io/candrii/charts/victoriametrics-vlsingle
-    version: "0.1.0"
+    version: "0.0.1"
     # Override chart name in child chart (removes victoriametrics prefix)
     nameOverride: vlsingle
   syncWave: "-1"
@@ -72,7 +72,7 @@ vmauth:
   enabled: true
   chart:
     repoURL: oci://ghcr.io/candrii/charts/victoriametrics-vmauth
-    version: "0.1.0"
+    version: "0.0.1"
     # Override chart name in child chart (removes victoriametrics prefix)
     nameOverride: vmauth
   syncWave: "0"
@@ -84,7 +84,7 @@ authentikGateway:
   enabled: false
   chart:
     repoURL: oci://ghcr.io/candrii/charts/victoriametrics-authentik-gateway
-    version: "0.1.0"
+    version: "0.0.1"
     # Override chart name in child chart (removes victoriametrics prefix)
     nameOverride: authentik-gateway
   syncWave: "1"

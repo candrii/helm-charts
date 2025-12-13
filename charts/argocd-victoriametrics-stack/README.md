@@ -92,31 +92,15 @@ namespaces:
 
 operator:
   enabled: true
-  chart:
-    repository: https://victoriametrics.github.io/helm-charts
-    name: victoria-metrics-operator
-    version: "0.57.1"
 
 vmsingle:
   enabled: true
-  chart:
-    name: victoriametrics-vmsingle
-    version: "0.1.0"
-    nameOverride: vmsingle
 
 vlsingle:
   enabled: true
-  chart:
-    name: victoriametrics-vlsingle
-    version: "0.1.0"
-    nameOverride: vlsingle
 
 vmauth:
   enabled: true
-  chart:
-    name: victoriametrics-vmauth
-    version: "0.1.0"
-    nameOverride: vmauth
 
 authentikGateway:
   enabled: false
