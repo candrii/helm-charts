@@ -1,13 +1,12 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["config:recommended"],
-  "dependencyDashboardApproval": false,
+  "extends": ["config:recommended", ":dependencyDashboardApproval"],
+  "dependencyDashboard": true,
   "packageRules": [
     {
-      "description": "Auto-create PRs for candrii charts",
-      "matchPackagePatterns": ["candrii/charts"],
-      "dependencyDashboardApproval": false,
-      "automerge": false
+      "description": "Auto-create PRs for all custom manager deps (no approval)",
+      "matchManagers": ["custom.regex"],
+      "dependencyDashboardApproval": false
     },
     {
       "description": "Group all victoriametrics chart updates",
