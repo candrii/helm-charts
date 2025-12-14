@@ -1,28 +1,28 @@
-{{- if .Values.authentikGateway.enabled }}
+{{- if .Values.vmauth.enabled }}
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: {{ .Values.namePrefix }}-authentik-gateway
+  name: {{ .Values.namePrefix }}-vmauth
   namespace: argocd
   labels:
     {{- include "argocd-victoriametrics-stack.labels" . | nindent 4 }}
   annotations:
-    argocd.argoproj.io/sync-wave: {{ .Values.authentikGateway.syncWave | quote }}
+    argocd.argoproj.io/sync-wave: {{ .Values.vmauth.syncWave | quote }}
   finalizers:
     - argoproj.io/resources-finalizer
 spec:
   project: {{ .Values.project }}
   source:
-    repoURL: {{ .Values.authentikGateway.chart.repoURL }}
-    targetRevision: {{ .Values.authentikGateway.chart.version }}
+    repoURL: {{ .Values.vmauth.chart.repoURL }}
+    targetRevision: {{ .Values.vmauth.chart.version }}
     chart: .
     helm:
-      {{- if or .Values.authentikGateway.chart.nameOverride .Values.authentikGateway.values }}
+      {{- if or .Values.vmauth.chart.nameOverride .Values.vmauth.values }}
       values: |
-        {{- if .Values.authentikGateway.chart.nameOverride }}
-        nameOverride: {{ .Values.authentikGateway.chart.nameOverride }}
+        {{- if .Values.vmauth.chart.nameOverride }}
+        nameOverride: {{ .Values.vmauth.chart.nameOverride }}
         {{- end }}
-        {{- with .Values.authentikGateway.values }}
+        {{- with .Values.vmauth.values }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
       {{- end }}
