@@ -91,11 +91,20 @@ httpRoute:
     namespace: monitoring
     port: 8427
 
-  # Authentication filter (forward auth to outpost)
-  authFilter:
+  # Forward auth configuration
+  forwardAuth:
     enabled: true
-    # URL for forward auth requests
-    address: http://vm-authentik-outpost.monitoring.svc.cluster.local:9000/outpost.goauthentik.io/auth/nginx
+    # Auth endpoint path on outpost - varies by proxy type:
+    #   nginx:   /outpost.goauthentik.io/auth/nginx
+    #   traefik: /outpost.goauthentik.io/auth/traefik
+    #   caddy:   /outpost.goauthentik.io/auth/caddy
+    #   envoy:   /outpost.goauthentik.io/auth/envoy (includes ext_authz support)
+    authPath: /outpost.goauthentik.io/auth/nginx
+    # Callback path prefix for auth redirects
+    callbackPath: /outpost.goauthentik.io
+
+  # Additional annotations for HTTPRoute
+  annotations: {}
 
   # Additional rules
   rules: []

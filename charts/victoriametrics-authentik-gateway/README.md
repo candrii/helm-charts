@@ -46,7 +46,18 @@ Deploys SSO authentication for VictoriaMetrics using:
 | `httpRoute.hostnames` | list | - | Hostnames to match |
 | `httpRoute.backendService.name` | string | - | Backend service |
 | `httpRoute.backendService.port` | int | - | Backend port |
-| `httpRoute.authFilter.enabled` | bool | `true` | Enable forward auth |
+| `httpRoute.forwardAuth.enabled` | bool | `true` | Enable forward auth |
+| `httpRoute.forwardAuth.authPath` | string | `/outpost.goauthentik.io/auth/nginx` | Auth endpoint path |
+| `httpRoute.forwardAuth.callbackPath` | string | `/outpost.goauthentik.io` | Callback path prefix |
+
+### Supported Auth Paths
+
+| Proxy | authPath |
+|-------|----------|
+| nginx | `/outpost.goauthentik.io/auth/nginx` |
+| traefik | `/outpost.goauthentik.io/auth/traefik` |
+| caddy | `/outpost.goauthentik.io/auth/caddy` |
+| envoy | `/outpost.goauthentik.io/auth/envoy` |
 
 ## Prerequisites
 
@@ -93,4 +104,8 @@ httpRoute:
     name: vmauth-monitoring
     namespace: monitoring
     port: 8427
+  forwardAuth:
+    enabled: true
+    authPath: /outpost.goauthentik.io/auth/nginx
+    callbackPath: /outpost.goauthentik.io
 ```
