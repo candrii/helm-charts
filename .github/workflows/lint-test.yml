@@ -32,11 +32,10 @@ jobs:
             echo "changed=true" >> $GITHUB_OUTPUT
           fi
 
-      - name: install helm unittest plugin
+      - name: Install helm unittest plugin
         if: steps.list-changed.outputs.changed == 'true'
         run: |
-          helm env
-          helm plugin install https://github.com/helm-unittest/helm-unittest.git --version 0.3.5
+          helm plugin install https://github.com/helm-unittest/helm-unittest.git --version 0.3.5 --verify=false
 
       - name: Run chart-testing (lint)
         run: ct lint --config ct.yaml
