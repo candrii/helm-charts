@@ -22,7 +22,7 @@ spec:
     {{- toYaml .Values.httpRoute.hostnames | nindent 4 }}
   rules:
     {{- if .Values.httpRoute.authFilter.enabled }}
-    # Forward auth rule - authenticate via outpost
+    # Forward auth callback route - authentik outpost
     - matches:
         - path:
             type: PathPrefix
@@ -31,19 +31,11 @@ spec:
         - name: {{ .Values.outpostDeployment.name }}
           port: {{ .Values.outpostDeployment.service.ports.http }}
     {{- end }}
-    # Main route with auth
+    # Main route to backend
     - matches:
         - path:
             type: PathPrefix
             value: /
-      {{- if .Values.httpRoute.authFilter.enabled }}
-      filters:
-        - type: ExtensionRef
-          extensionRef:
-            group: gateway.envoyproxy.io
-            kind: HTTPAuthenticationFilter
-            name: {{ .Values.httpRoute.name }}-auth
-      {{- end }}
       backendRefs:
         - name: {{ .Values.httpRoute.backendService.name }}
           namespace: {{ .Values.httpRoute.backendService.namespace }}

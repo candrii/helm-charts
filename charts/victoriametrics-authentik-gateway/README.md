@@ -6,12 +6,12 @@ Authentik SSO integration for VictoriaMetrics via Gateway API.
 
 Deploys SSO authentication for VictoriaMetrics using:
 - **Outpost Deployment** - Authentik proxy for forward authentication
-- **Gateway API** - HTTPRoute with SecurityPolicy for auth
+- **Gateway API** - HTTPRoute for traffic routing
 
 ## Requirements
 
 - Kubernetes 1.21+
-- [Gateway API](https://gateway-api.sigs.k8s.io/) controller (Envoy Gateway)
+- [Gateway API](https://gateway-api.sigs.k8s.io/) controller
 - [Authentik](https://goauthentik.io/) instance
 
 ## Resources Created
@@ -21,7 +21,6 @@ Deploys SSO authentication for VictoriaMetrics using:
 | Deployment | apps/v1 | Authentik outpost proxy |
 | Service | v1 | Outpost service |
 | HTTPRoute | gateway.networking.k8s.io/v1 | Traffic routing |
-| SecurityPolicy | gateway.envoyproxy.io/v1alpha1 | Forward auth filter |
 
 ## Configuration
 
