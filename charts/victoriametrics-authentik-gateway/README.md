@@ -1,32 +1,20 @@
 # victoriametrics-authentik-gateway
 
-Authentik SSO integration for VictoriaMetrics via Crossplane CRDs and Gateway API.
+Authentik SSO integration for VictoriaMetrics via Gateway API.
 
 ## Description
 
 Deploys SSO authentication for VictoriaMetrics using:
-- **Crossplane CRDs** - Declaratively manage Authentik resources
 - **Outpost Deployment** - Authentik proxy for forward authentication
 - **Gateway API** - HTTPRoute with SecurityPolicy for auth
 
 ## Requirements
 
 - Kubernetes 1.21+
-- [Crossplane](https://crossplane.io/) with Authentik Provider
 - [Gateway API](https://gateway-api.sigs.k8s.io/) controller (Envoy Gateway)
 - [Authentik](https://goauthentik.io/) instance
 
 ## Resources Created
-
-### Crossplane (Authentik)
-
-| Resource | API Group | Description |
-|----------|-----------|-------------|
-| Application | application.authentik.crossplane.io/v1alpha1 | App registration |
-| ProxyProvider | provider.authentik.crossplane.io/v1alpha1 | Forward auth provider |
-| Outpost | outpost.authentik.crossplane.io/v1alpha1 | Outpost registration |
-
-### Kubernetes
 
 | Resource | API Group | Description |
 |----------|-----------|-------------|
@@ -37,21 +25,6 @@ Deploys SSO authentication for VictoriaMetrics using:
 
 ## Configuration
 
-### Crossplane
-
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `crossplane.providerConfigRef` | string | `authentik` | Provider config name |
-| `crossplane.application.enabled` | bool | `true` | Create Application |
-| `crossplane.application.name` | string | `victoriametrics` | App name |
-| `crossplane.application.slug` | string | `victoriametrics` | App slug |
-| `crossplane.provider.enabled` | bool | `true` | Create ProxyProvider |
-| `crossplane.provider.name` | string | `victoriametrics-proxy` | Provider name |
-| `crossplane.provider.externalHost` | string | - | External URL |
-| `crossplane.provider.mode` | string | `forward_single` | Proxy mode |
-| `crossplane.outpost.enabled` | bool | `true` | Create Outpost |
-| `crossplane.outpost.name` | string | `victoriametrics-outpost` | Outpost name |
-
 ### Outpost Deployment
 
 | Parameter | Type | Default | Description |
@@ -60,7 +33,7 @@ Deploys SSO authentication for VictoriaMetrics using:
 | `outpostDeployment.name` | string | `vm-authentik-outpost` | Deployment name |
 | `outpostDeployment.replicas` | int | `1` | Replica count |
 | `outpostDeployment.image.repository` | string | `ghcr.io/goauthentik/proxy` | Image |
-| `outpostDeployment.image.tag` | string | `2024.10.4` | Image tag |
+| `outpostDeployment.image.tag` | string | `2025.10.2` | Image tag |
 | `outpostDeployment.authentik.url` | string | - | Authentik URL |
 | `outpostDeployment.authentik.tokenSecretName` | string | `authentik-outpost-token` | Token secret |
 
@@ -96,20 +69,6 @@ stringData:
 ```yaml
 enabled: true
 namespace: monitoring
-
-crossplane:
-  providerConfigRef: authentik
-  application:
-    name: victoriametrics
-    slug: victoriametrics
-  provider:
-    name: victoriametrics-proxy
-    externalHost: https://metrics.example.com
-    mode: forward_single
-    authorizationFlow: default-provider-authorization-implicit-consent
-  outpost:
-    name: victoriametrics-outpost
-    type: proxy
 
 outpostDeployment:
   enabled: true
