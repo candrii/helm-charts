@@ -19,9 +19,8 @@ helm pull oci://ghcr.io/candrii/charts/victoriametrics-vmsingle --version 0.1.0
 | Chart | Version | Description |
 |-------|---------|-------------|
 | [argocd-victoriametrics-stack](charts/argocd-victoriametrics-stack/) | 0.0.3 | ArgoCD Application to deploy Victoria Metrics stack with operator |
-| [victoriametrics-authentik-gateway](charts/victoriametrics-authentik-gateway/) | 0.0.2 | Authentik outpost and Gateway HTTPRoute for Victoria Metrics SSO authentication |
+| [victoriametrics-authentik-gateway](charts/victoriametrics-authentik-gateway/) | 0.0.3 | VMAuth + Authentik outpost + Gateway HTTPRoute for SSO |
 | [victoriametrics-vlsingle](charts/victoriametrics-vlsingle/) | 0.0.1 | VLSingle CRD for Victoria Logs single instance deployment |
-| [victoriametrics-vmauth](charts/victoriametrics-vmauth/) | 0.0.1 | VMAuth CRD for Victoria Metrics authentication proxy |
 | [victoriametrics-vmsingle](charts/victoriametrics-vmsingle/) | 0.0.2 | VMSingle CRD for Victoria Metrics single instance deployment |
 
 ---
@@ -33,13 +32,12 @@ Modular Helm charts for deploying VictoriaMetrics observability stack on Kuberne
 ### Required
 
 - Kubernetes 1.21+
-- [VictoriaMetrics Operator](https://docs.victoriametrics.com/operator/) - Manages VMSingle, VLSingle, VMAuth CRDs
+- [VictoriaMetrics Operator](https://docs.victoriametrics.com/operator/) - Manages VMSingle, VLSingle CRDs
 
 ### Optional (depending on components used)
 
 - [ArgoCD](https://argo-cd.readthedocs.io/) - For `argocd-victoriametrics-stack`
-- [Crossplane](https://crossplane.io/) with Authentik Provider - For `victoriametrics-authentik-gateway`
-- [Gateway API](https://gateway-api.sigs.k8s.io/) controller (Envoy Gateway, etc.) - For `victoriametrics-authentik-gateway`
+- [Gateway API](https://gateway-api.sigs.k8s.io/) controller - For `victoriametrics-authentik-gateway`
 - [Authentik](https://goauthentik.io/) instance - For SSO
 
 ## Configuration Examples
@@ -55,32 +53,16 @@ storage:
   size: 100Gi
 ```
 
-### Metrics + Logs + Auth Proxy
-
-```yaml
-# vm-vmauth/values.yaml
-name: vmauth
-namespace: monitoring
-ingress:
-  className: nginx
-  host: metrics.example.com
-urlMaps:
-  - srcPaths: ["/.*"]
-    urlPrefix: ["http://vmsingle-metrics:8429"]
-```
-
-### With SSO (Authentik)
+### With SSO (Authentik + VMAuth)
 
 ```yaml
 # vm-authentik-gateway/values.yaml
-crossplane:
-  providerConfigRef: authentik
-  application:
-    name: victoriametrics
-    slug: victoriametrics
-  provider:
-    externalHost: https://metrics.example.com
-    mode: forward_single
+vmauth:
+  enabled: true
+  config:
+    unauthorized_user:
+      url_prefix:
+        - http://vmsingle-metrics.monitoring.svc:8429
 outpostDeployment:
   authentik:
     url: https://auth.example.com

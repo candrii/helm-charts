@@ -66,25 +66,13 @@ vlsingle:
   syncWave: "-1"
 
 # =============================================================================
-# VMAUTH
-# =============================================================================
-vmauth:
-  enabled: true
-  chart:
-    repoURL: oci://ghcr.io/candrii/charts/victoriametrics-vmauth
-    version: "0.0.1"
-    # Override chart name in child chart (removes victoriametrics prefix)
-    nameOverride: vmauth
-  syncWave: "0"
-
-# =============================================================================
-# AUTHENTIK GATEWAY (optional)
+# AUTHENTIK GATEWAY (includes VMAuth subchart)
 # =============================================================================
 authentikGateway:
   enabled: false
   chart:
     repoURL: oci://ghcr.io/candrii/charts/victoriametrics-authentik-gateway
-    version: "0.0.2"
+    version: "0.0.3"
     # Override chart name in child chart (removes victoriametrics prefix)
     nameOverride: authentik-gateway
-  syncWave: "1"
+  syncWave: "0"

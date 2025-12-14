@@ -1,6 +1,6 @@
 # =============================================================================
 # VICTORIA METRICS AUTHENTIK GATEWAY
-# Authentik outpost and Gateway HTTPRoute for SSO authentication
+# Authentik outpost, VMAuth proxy and Gateway HTTPRoute for SSO authentication
 # =============================================================================
 
 # Enable/disable entire chart
@@ -8,6 +8,26 @@ enabled: true
 
 # Namespace for deployment
 namespace: monitoring
+
+# =============================================================================
+# VMAUTH - Victoria Metrics Auth Proxy (subchart)
+# Official chart: https://victoriametrics.github.io/helm-charts/
+# =============================================================================
+vmauth:
+  enabled: true
+  # Route all requests to vmsingle backend
+  config:
+    unauthorized_user:
+      url_prefix:
+        - http://vmsingle-monitoring.monitoring.svc:8429
+  service:
+    servicePort: 8427
+  resources:
+    requests:
+      memory: 64Mi
+      cpu: 10m
+    limits:
+      memory: 128Mi
 
 # =============================================================================
 # AUTHENTIK OUTPOST DEPLOYMENT
