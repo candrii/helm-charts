@@ -4,25 +4,13 @@
     "config:recommended"
   ],
   "dependencyDashboard": true,
-  "allowedCommands": [
-    "^./scripts/bump-chart-version\\.sh"
-  ],
   "packageRules": [
     {
-      "description": "Auto-create PRs for custom manager deps and bump chart version",
+      "description": "Auto-create PRs for custom manager deps",
       "matchManagers": [
         "custom.regex"
       ],
-      "dependencyDashboardApproval": false,
-      "postUpgradeTasks": {
-        "commands": [
-          "./scripts/bump-chart-version.sh {{{packageFileDir}}}/values.yaml"
-        ],
-        "fileFilters": [
-          "charts/**/Chart.yaml"
-        ],
-        "executionMode": "branch"
-      }
+      "dependencyDashboardApproval": false
     },
     {
       "description": "Group all victoriametrics chart updates",
