@@ -18,7 +18,7 @@ helm pull oci://ghcr.io/candrii/charts/victoriametrics-vmsingle --version 0.1.0
 
 | Chart | Version | Description |
 |-------|---------|-------------|
-| [argocd-victoriametrics-stack](charts/argocd-victoriametrics-stack/) | 0.0.2 | ArgoCD Application to deploy Victoria Metrics stack with operator |
+| [argocd-victoriametrics-stack](charts/argocd-victoriametrics-stack/) | 0.0.3 | ArgoCD Application to deploy Victoria Metrics stack with operator |
 | [victoriametrics-authentik-gateway](charts/victoriametrics-authentik-gateway/) | 0.0.2 | Authentik outpost and Gateway HTTPRoute for Victoria Metrics SSO authentication |
 | [victoriametrics-vlsingle](charts/victoriametrics-vlsingle/) | 0.0.1 | VLSingle CRD for Victoria Logs single instance deployment |
 | [victoriametrics-vmauth](charts/victoriametrics-vmauth/) | 0.0.1 | VMAuth CRD for Victoria Metrics authentication proxy |
