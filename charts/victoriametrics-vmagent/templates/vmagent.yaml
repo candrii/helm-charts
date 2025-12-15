@@ -1,0 +1,120 @@
+{{- if .Values.enabled }}
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMAgent
+metadata:
+  name: {{ .Values.name }}
+  namespace: {{ .Values.namespace }}
+spec:
+  replicaCount: {{ .Values.replicaCount }}
+
+  {{- with .Values.remoteWrite }}
+  remoteWrite:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+
+  scrapeInterval: {{ .Values.scrapeInterval | quote }}
+
+  resources:
+    {{- if .Values.resources.requests }}
+    requests:
+      {{- toYaml .Values.resources.requests | nindent 6 }}
+    {{- end }}
+    {{- if .Values.resources.limits }}
+    limits:
+      {{- toYaml .Values.resources.limits | nindent 6 }}
+    {{- end }}
+
+  {{- if .Values.extraArgs }}
+  extraArgs:
+    {{- range $key, $value := .Values.extraArgs }}
+    {{ $key }}: {{ $value | quote }}
+    {{- end }}
+  {{- end }}
+
+  # Selectors for scrape configs
+  {{- with .Values.serviceScrapeSelector }}
+  serviceScrapeSelector:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+
+  {{- with .Values.podScrapeSelector }}
+  podScrapeSelector:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+
+  {{- with .Values.nodeScrapeSelector }}
+  nodeScrapeSelector:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+
+  {{- with .Values.staticScrapeSelector }}
+  staticScrapeSelector:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+
+  {{- with .Values.probeSelector }}
+  probeSelector:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+
+  # Namespace selectors
+  {{- with .Values.serviceScrapeNamespaceSelector }}
+  serviceScrapeNamespaceSelector:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+
+  {{- with .Values.podScrapeNamespaceSelector }}
+  podScrapeNamespaceSelector:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+
+  {{- with .Values.nodeScrapeNamespaceSelector }}
+  nodeScrapeNamespaceSelector:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+
+  {{- with .Values.staticScrapeNamespaceSelector }}
+  staticScrapeNamespaceSelector:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+
+  {{- with .Values.probeNamespaceSelector }}
+  probeNamespaceSelector:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+
+  {{- with .Values.inlineScrapeConfig }}
+  inlineScrapeConfig: |
+    {{- . | nindent 4 }}
+  {{- end }}
+
+  {{- with .Values.podLabels }}
+  podMetadata:
+    labels:
+      {{- toYaml . | nindent 6 }}
+  {{- end }}
+
+  {{- with .Values.podAnnotations }}
+  podMetadata:
+    annotations:
+      {{- toYaml . | nindent 6 }}
+  {{- end }}
+
+  {{- with .Values.nodeSelector }}
+  nodeSelector:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+
+  {{- with .Values.tolerations }}
+  tolerations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+
+  {{- with .Values.affinity }}
+  affinity:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+
+  # Select all VMServiceScrape/VMPodScrape resources across all namespaces
+  selectAllByDefault: true
+{{- end }}
