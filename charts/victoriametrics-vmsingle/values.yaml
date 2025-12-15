@@ -37,3 +37,15 @@ extraArgs:
   search.maxUniqueTimeseries: "5000000"
   search.maxQueryDuration: "180s"
   search.maxConcurrentRequests: "16"
+
+# VMServiceScrape configuration for self-monitoring
+serviceScrape:
+  enabled: true
+  # Scrape interval
+  interval: "30s"
+  # Scrape timeout
+  scrapeTimeout: "10s"
+  # Relabel configs (optional)
+  relabelConfigs: []
+  # Metric relabel configs (optional)
+  metricRelabelConfigs: []
