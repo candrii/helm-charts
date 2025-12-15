@@ -86,7 +86,7 @@ vmauth:
   enabled: false
   chart:
     repoURL: oci://ghcr.io/victoriametrics/helm-charts/victoria-metrics-auth
-    version: "0.20.0"
+    version: "0.21.0"
     nameOverride: vmauth
   syncWave: "0"
 
