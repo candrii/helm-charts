@@ -1,0 +1,34 @@
+{{- if .Values.vmagent.enabled }}
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: {{ .Values.namePrefix }}-vmagent
+  namespace: argocd
+  labels:
+    {{- include "argocd-victoriametrics-stack.labels" . | nindent 4 }}
+  annotations:
+    argocd.argoproj.io/sync-wave: {{ .Values.vmagent.syncWave | quote }}
+  finalizers:
+    - argoproj.io/resources-finalizer
+spec:
+  project: {{ .Values.project }}
+  source:
+    repoURL: {{ .Values.vmagent.chart.repoURL }}
+    targetRevision: {{ .Values.vmagent.chart.version }}
+    chart: .
+    helm:
+      {{- if or .Values.vmagent.chart.nameOverride .Values.vmagent.values }}
+      values: |
+        {{- if .Values.vmagent.chart.nameOverride }}
+        nameOverride: {{ .Values.vmagent.chart.nameOverride }}
+        {{- end }}
+        {{- with .Values.vmagent.values }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      {{- end }}
+  destination:
+    name: {{ .Values.destinationCluster }}
+    namespace: {{ .Values.namespaces.stack }}
+  syncPolicy:
+    {{- toYaml .Values.syncPolicy | nindent 4 }}
+{{- end }}
