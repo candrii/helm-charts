@@ -1,0 +1,70 @@
+# =============================================================================
+# VICTORIA METRICS VMAGENT
+# VMAgent CRD for Victoria Metrics metrics collection agent
+# =============================================================================
+
+# Enable/disable VMAgent deployment
+enabled: true
+
+# VMAgent name
+name: monitoring
+
+# Namespace for deployment
+namespace: monitoring
+
+# Number of replicas
+replicaCount: 1
+
+# Remote write URL (where to send scraped metrics)
+remoteWrite:
+  - url: "http://vmsingle-monitoring.monitoring.svc:8429/api/v1/write"
+
+# Resource requests and limits
+resources:
+  requests:
+    memory: 256Mi
+    cpu: 100m
+  limits:
+    memory: 512Mi
+
+# Scrape interval
+scrapeInterval: "30s"
+
+# Extra arguments for VMAgent
+extraArgs: {}
+  # promscrape.maxScrapeSize: "16MB"
+  # promscrape.streamParse: "true"
+
+# Select all VMServiceScrape, VMPodScrape, VMNodeScrape, VMStaticScrape, VMProbe
+# If not set, operator uses default selectors
+serviceScrapeSelector: {}
+podScrapeSelector: {}
+nodeScrapeSelector: {}
+staticScrapeSelector: {}
+probeSelector: {}
+
+# Namespace selector for scrape configs
+# Empty means all namespaces
+serviceScrapeNamespaceSelector: {}
+podScrapeNamespaceSelector: {}
+nodeScrapeNamespaceSelector: {}
+staticScrapeNamespaceSelector: {}
+probeNamespaceSelector: {}
+
+# Inline scrape configs (optional - for static targets)
+inlineScrapeConfig: ""
+
+# Additional labels for VMAgent pods
+podLabels: {}
+
+# Additional annotations for VMAgent pods
+podAnnotations: {}
+
+# Node selector
+nodeSelector: {}
+
+# Tolerations
+tolerations: []
+
+# Affinity
+affinity: {}

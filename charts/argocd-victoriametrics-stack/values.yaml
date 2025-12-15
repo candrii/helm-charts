@@ -66,6 +66,19 @@ vlsingle:
   syncWave: "-1"
 
 # =============================================================================
+# VMAGENT - Victoria Metrics metrics collection agent
+# Discovers and scrapes VMServiceScrape, VMPodScrape, etc.
+# =============================================================================
+vmagent:
+  enabled: true
+  chart:
+    repoURL: oci://ghcr.io/candrii/charts/victoriametrics-vmagent
+    version: "0.0.1"
+    nameOverride: vmagent
+  # Sync wave 0 - deploys after vmsingle (-1)
+  syncWave: "0"
+
+# =============================================================================
 # VMAUTH - Victoria Metrics Auth Proxy
 # Official chart: https://victoriametrics.github.io/helm-charts/
 # =============================================================================
