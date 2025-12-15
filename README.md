@@ -18,7 +18,7 @@ helm pull oci://ghcr.io/candrii/charts/victoriametrics-vmsingle --version 0.1.0
 
 | Chart | Version | Description |
 |-------|---------|-------------|
-| [argocd-victoriametrics-stack](charts/argocd-victoriametrics-stack/) | 1.1.1 | ArgoCD Application to deploy Victoria Metrics stack with operator |
+| [argocd-victoriametrics-stack](charts/argocd-victoriametrics-stack/) | 1.1.2 | ArgoCD Application to deploy Victoria Metrics stack with operator |
 | [victoriametrics-vlsingle](charts/victoriametrics-vlsingle/) | 0.0.1 | VLSingle CRD for Victoria Logs single instance deployment |
 | [victoriametrics-vmsingle](charts/victoriametrics-vmsingle/) | 0.0.2 | VMSingle CRD for Victoria Metrics single instance deployment |
 
