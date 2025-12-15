@@ -47,7 +47,7 @@ vmsingle:
   chart:
     # OCI registry URL
     repoURL: oci://ghcr.io/candrii/charts/victoriametrics-vmsingle
-    version: "0.0.2"
+    version: "0.0.3"
     # Override chart name in child chart (removes victoriametrics prefix)
     nameOverride: vmsingle
   # Sync wave for ordering (-1 deploys after operator)
@@ -60,7 +60,7 @@ vlsingle:
   enabled: true
   chart:
     repoURL: oci://ghcr.io/candrii/charts/victoriametrics-vlsingle
-    version: "0.0.1"
+    version: "0.0.2"
     # Override chart name in child chart (removes victoriametrics prefix)
     nameOverride: vlsingle
   syncWave: "-1"

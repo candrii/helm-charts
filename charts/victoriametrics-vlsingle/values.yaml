@@ -26,3 +26,15 @@ resources:
     memory: 500Mi
     cpu: 1m
   limits: {}
+
+# VMServiceScrape configuration for self-monitoring
+serviceScrape:
+  enabled: true
+  # Scrape interval
+  interval: "30s"
+  # Scrape timeout
+  scrapeTimeout: "10s"
+  # Relabel configs (optional)
+  relabelConfigs: []
+  # Metric relabel configs (optional)
+  metricRelabelConfigs: []
