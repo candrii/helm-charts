@@ -18,7 +18,7 @@ helm pull oci://ghcr.io/candrii/charts/victoriametrics-vmsingle --version 0.1.0
 
 | Chart | Version | Description |
 |-------|---------|-------------|
-| [argocd-victoriametrics-stack](charts/argocd-victoriametrics-stack/) | 1.1.0 | ArgoCD Application to deploy Victoria Metrics stack with operator |
+| [argocd-victoriametrics-stack](charts/argocd-victoriametrics-stack/) | 1.1.1 | ArgoCD Application to deploy Victoria Metrics stack with operator |
 | [victoriametrics-vlsingle](charts/victoriametrics-vlsingle/) | 0.0.1 | VLSingle CRD for Victoria Logs single instance deployment |
 | [victoriametrics-vmsingle](charts/victoriametrics-vmsingle/) | 0.0.2 | VMSingle CRD for Victoria Metrics single instance deployment |
 
@@ -36,6 +36,7 @@ Modular Helm charts for deploying VictoriaMetrics observability stack on Kuberne
 ### Optional (depending on components used)
 
 - [ArgoCD](https://argo-cd.readthedocs.io/) - For `argocd-victoriametrics-stack`
+- [Authentik](https://goauthentik.io/) - For SSO integration via `authentik-remote-cluster`
 
 ## Configuration Examples
 
@@ -61,6 +62,15 @@ vmauth:
       unauthorized_user:
         url_prefix:
           - http://vmsingle-metrics.monitoring.svc:8429
+```
+
+### With Authentik Remote Cluster
+
+```yaml
+# argocd-victoriametrics-stack values
+authentikRemoteCluster:
+  enabled: true
+  namespace: authentik-remote
 ```
 
 ## License

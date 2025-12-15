@@ -90,3 +90,5 @@ authentikRemoteCluster:
   # Namespace for authentik RBAC resources
   namespace: authentik-remote
   syncWave: "1"
+  # Additional values to pass to the chart
+  values: {}
