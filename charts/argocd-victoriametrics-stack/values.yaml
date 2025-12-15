@@ -76,3 +76,17 @@ vmauth:
     version: "0.20.0"
     nameOverride: vmauth
   syncWave: "0"
+
+# =============================================================================
+# AUTHENTIK REMOTE CLUSTER - RBAC for Authentik integration
+# Official chart: https://github.com/goauthentik/helm
+# =============================================================================
+authentikRemoteCluster:
+  enabled: false
+  chart:
+    repoURL: https://charts.goauthentik.io
+    name: authentik-remote-cluster
+    version: "2.1.0"
+  # Namespace for authentik RBAC resources
+  namespace: authentik-remote
+  syncWave: "1"

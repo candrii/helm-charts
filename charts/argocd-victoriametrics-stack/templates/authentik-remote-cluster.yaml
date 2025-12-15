@@ -1,0 +1,29 @@
+{{- if .Values.authentikRemoteCluster.enabled }}
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: {{ .Values.namePrefix }}-authentik-remote-cluster
+  namespace: argocd
+  labels:
+    {{- include "argocd-victoriametrics-stack.labels" . | nindent 4 }}
+  annotations:
+    argocd.argoproj.io/sync-wave: {{ .Values.authentikRemoteCluster.syncWave | quote }}
+  finalizers:
+    - argoproj.io/resources-finalizer
+spec:
+  project: {{ .Values.project }}
+  source:
+    repoURL: {{ .Values.authentikRemoteCluster.chart.repoURL }}
+    targetRevision: {{ .Values.authentikRemoteCluster.chart.version }}
+    chart: {{ .Values.authentikRemoteCluster.chart.name }}
+    helm:
+      {{- with .Values.authentikRemoteCluster.values }}
+      values: |
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+  destination:
+    name: {{ .Values.destinationCluster }}
+    namespace: {{ .Values.authentikRemoteCluster.namespace }}
+  syncPolicy:
+    {{- toYaml .Values.syncPolicy | nindent 4 }}
+{{- end }}
