@@ -2,7 +2,7 @@ apiVersion: v2
 name: grafana-operator-grafana
 description: Grafana CRD for Grafana Operator - deploys Grafana instance via operator
 type: application
-version: "0.2.0"
+version: "0.2.1"
 appVersion: "11.4.0"
 keywords:
   - grafana

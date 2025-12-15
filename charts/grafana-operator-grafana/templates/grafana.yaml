@@ -101,36 +101,226 @@ spec:
 
   {{- /* Deployment - only if not external */}}
   {{- if not .Values.external.enabled }}
-  {{- include "grafana.deployment" . | nindent 2 }}
+  deployment:
+    {{- with .Values.deployment.metadata }}
+    {{- if or .labels .annotations }}
+    metadata:
+      {{- with .labels }}
+      labels:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .annotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    {{- end }}
+    {{- end }}
+    spec:
+      {{- with .Values.deployment.spec.replicas }}
+      replicas: {{ . }}
+      {{- end }}
+      {{- with .Values.deployment.spec.strategy }}
+      strategy:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      template:
+        {{- with .Values.deployment.spec.template.metadata }}
+        {{- if or .labels .annotations }}
+        metadata:
+          {{- with .labels }}
+          labels:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .annotations }}
+          annotations:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+        {{- end }}
+        {{- end }}
+        spec:
+          {{- with .Values.deployment.spec.template.spec.securityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.deployment.spec.template.spec.nodeSelector }}
+          nodeSelector:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.deployment.spec.template.spec.tolerations }}
+          tolerations:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.deployment.spec.template.spec.affinity }}
+          affinity:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.deployment.spec.template.spec.volumes }}
+          volumes:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.deployment.spec.template.spec.initContainers }}
+          initContainers:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          containers:
+            {{- range .Values.deployment.spec.template.spec.containers }}
+            - name: {{ .name }}
+              {{- with .securityContext }}
+              securityContext:
+                {{- toYaml . | nindent 16 }}
+              {{- end }}
+              {{- with .resources }}
+              resources:
+                {{- toYaml . | nindent 16 }}
+              {{- end }}
+              {{- with .env }}
+              env:
+                {{- toYaml . | nindent 16 }}
+              {{- end }}
+              {{- with .volumeMounts }}
+              volumeMounts:
+                {{- toYaml . | nindent 16 }}
+              {{- end }}
+            {{- end }}
   {{- end }}
 
   {{- /* Service - only if not external */}}
   {{- if not .Values.external.enabled }}
-  {{- include "grafana.service" . | nindent 2 }}
+  service:
+    {{- with .Values.service.metadata }}
+    {{- if or .labels .annotations }}
+    metadata:
+      {{- with .labels }}
+      labels:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .annotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    {{- end }}
+    {{- end }}
+    spec:
+      {{- toYaml .Values.service.spec | nindent 6 }}
   {{- end }}
 
   {{- /* Ingress */}}
   {{- if .Values.ingress.enabled }}
-  {{- include "grafana.ingress" . | nindent 2 }}
+  ingress:
+    {{- with .Values.ingress.metadata }}
+    {{- if or .labels .annotations }}
+    metadata:
+      {{- with .labels }}
+      labels:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .annotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    {{- end }}
+    {{- end }}
+    spec:
+      {{- with .Values.ingress.spec.ingressClassName }}
+      ingressClassName: {{ . }}
+      {{- end }}
+      {{- with .Values.ingress.spec.rules }}
+      rules:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.ingress.spec.tls }}
+      tls:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.ingress.spec.defaultBackend }}
+      defaultBackend:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
   {{- end }}
 
   {{- /* PersistentVolumeClaim - only if not external */}}
   {{- if and .Values.persistentVolumeClaim.enabled (not .Values.external.enabled) }}
-  {{- include "grafana.pvc" . | nindent 2 }}
+  persistentVolumeClaim:
+    {{- with .Values.persistentVolumeClaim.metadata }}
+    {{- if or .labels .annotations }}
+    metadata:
+      {{- with .labels }}
+      labels:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .annotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    {{- end }}
+    {{- end }}
+    spec:
+      {{- toYaml .Values.persistentVolumeClaim.spec | nindent 6 }}
   {{- end }}
 
   {{- /* ServiceAccount - only if not external */}}
   {{- if and .Values.serviceAccount.enabled (not .Values.external.enabled) }}
-  {{- include "grafana.serviceAccount" . | nindent 2 }}
+  serviceAccount:
+    metadata:
+      name: {{ include "grafana.serviceAccountName" . }}
+      {{- with .Values.serviceAccount.metadata.labels }}
+      labels:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.serviceAccount.metadata.annotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    {{- with .Values.serviceAccount.imagePullSecrets }}
+    imagePullSecrets:
+      {{- toYaml . | nindent 6 }}
+    {{- end }}
+    {{- if .Values.serviceAccount.automountServiceAccountToken }}
+    automountServiceAccountToken: {{ .Values.serviceAccount.automountServiceAccountToken }}
+    {{- end }}
   {{- end }}
 
   {{- /* Route (OpenShift) */}}
   {{- if .Values.route.enabled }}
-  {{- include "grafana.route" . | nindent 2 }}
+  route:
+    {{- with .Values.route.metadata }}
+    {{- if or .labels .annotations }}
+    metadata:
+      {{- with .labels }}
+      labels:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .annotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    {{- end }}
+    {{- end }}
+    {{- with .Values.route.spec }}
+    spec:
+      {{- toYaml . | nindent 6 }}
+    {{- end }}
   {{- end }}
 
   {{- /* HTTPRoute (Gateway API) */}}
   {{- if .Values.httpRoute.enabled }}
-  {{- include "grafana.httpRoute" . | nindent 2 }}
+  httpRoute:
+    {{- with .Values.httpRoute.metadata }}
+    {{- if or .labels .annotations }}
+    metadata:
+      {{- with .labels }}
+      labels:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .annotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    {{- end }}
+    {{- end }}
+    {{- with .Values.httpRoute.spec }}
+    spec:
+      {{- toYaml . | nindent 6 }}
+    {{- end }}
   {{- end }}
 {{- end }}
