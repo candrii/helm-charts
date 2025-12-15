@@ -4,7 +4,9 @@ Helm chart for deploying Grafana using the [Grafana Operator](https://github.com
 
 ## Description
 
-Creates a `Grafana` custom resource that the Grafana Operator manages to deploy and configure a Grafana instance.
+Creates a `Grafana` custom resource (`grafana.integreatly.org/v1beta1`) that the Grafana Operator manages to deploy and configure a Grafana instance.
+
+This chart maps directly to the official Grafana Operator API, making all upstream configuration options available.
 
 ## Requirements
 
@@ -17,161 +19,230 @@ Creates a `Grafana` custom resource that the Grafana Operator manages to deploy 
 helm install grafana candrii/grafana-operator-grafana -n monitoring
 ```
 
-## Configuration
+## API Reference
 
-### Basic
+This chart's values map directly to the [Grafana CRD spec](https://grafana.github.io/grafana-operator/docs/api/).
 
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `enabled` | bool | `true` | Enable/disable Grafana deployment |
-| `name` | string | `grafana` | Grafana instance name |
-| `namespace` | string | `""` | Namespace (defaults to release namespace) |
-| `version` | string | `11.4.0` | Grafana container image version |
-| `labels` | object | `{dashboards: "grafana"}` | Labels for the Grafana CR |
-
-### Instance Selector
+### Top-Level Configuration
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
-| `instanceSelector.matchLabels` | object | `{dashboards: "grafana"}` | Label selector for dashboards/datasources |
+| `enabled` | bool | `true` | Enable/disable Grafana CR creation |
+| `metadata.name` | string | `""` | CR name (defaults to release name) |
+| `metadata.namespace` | string | `""` | Namespace (defaults to release namespace) |
+| `metadata.labels` | object | `{}` | Additional labels |
+| `metadata.annotations` | object | `{}` | Additional annotations |
+| `version` | string | `"11.4.0"` | Grafana container image version |
+| `instanceSelector` | object | `{matchLabels: {dashboards: "grafana"}}` | Label selector for dashboards/datasources |
+| `disableDefaultAdminSecret` | bool | `false` | Disable default admin credentials |
+| `disableDefaultSecurityContext` | string | `""` | Disable security context (Pod/Container/All) |
+| `suspend` | bool | `false` | Pause reconciliation |
 
-### Grafana Configuration (grafana.ini)
+### Config (grafana.ini)
 
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `config.log.mode` | string | `console` | Log output mode |
-| `config.log.level` | string | `info` | Log level |
-| `config.server.root_url` | string | `""` | Root URL for Grafana |
-| `config.auth.disable_login_form` | string | `false` | Disable login form |
-| `config.auth.anonymous.enabled` | string | `false` | Enable anonymous access |
-| `config.security.admin_user` | string | `""` | Admin username |
-| `config.security.admin_password` | string | `""` | Admin password |
+Maps to `spec.config` - nested map for grafana.ini sections:
+
+```yaml
+config:
+  log:
+    mode: "console"
+    level: "info"
+  server:
+    root_url: "https://grafana.example.com"
+  auth:
+    disable_login_form: "true"
+  auth.generic_oauth:
+    enabled: "true"
+    # ... other OAuth settings
+```
 
 ### Deployment
 
+Maps to `spec.deployment` (DeploymentV1):
+
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
-| `deployment.replicas` | int | `1` | Number of replicas |
-| `deployment.resources.requests.cpu` | string | `100m` | CPU request |
-| `deployment.resources.requests.memory` | string | `256Mi` | Memory request |
-| `deployment.resources.limits.memory` | string | `512Mi` | Memory limit |
-| `deployment.nodeSelector` | object | `{}` | Node selector |
-| `deployment.tolerations` | list | `[]` | Tolerations |
-| `deployment.affinity` | object | `{}` | Affinity rules |
-| `deployment.env` | list | `[]` | Environment variables |
+| `deployment.metadata.labels` | object | `{}` | Deployment labels |
+| `deployment.metadata.annotations` | object | `{}` | Deployment annotations |
+| `deployment.spec.replicas` | int | `1` | Number of replicas |
+| `deployment.spec.strategy` | object | `{}` | Update strategy |
+| `deployment.spec.template.metadata` | object | `{}` | Pod metadata |
+| `deployment.spec.template.spec.securityContext` | object | See values | Pod security context |
+| `deployment.spec.template.spec.containers` | list | See values | Container specs |
+| `deployment.spec.template.spec.volumes` | list | `[]` | Pod volumes |
+| `deployment.spec.template.spec.nodeSelector` | object | `{}` | Node selector |
+| `deployment.spec.template.spec.tolerations` | list | `[]` | Tolerations |
+| `deployment.spec.template.spec.affinity` | object | `{}` | Affinity rules |
+| `deployment.spec.template.spec.initContainers` | list | `[]` | Init containers |
 
 ### Service
 
+Maps to `spec.service` (ServiceV1):
+
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
-| `service.type` | string | `ClusterIP` | Service type |
-| `service.port` | int | `3000` | Service port |
-| `service.annotations` | object | `{}` | Service annotations |
+| `service.metadata.labels` | object | `{}` | Service labels |
+| `service.metadata.annotations` | object | `{}` | Service annotations |
+| `service.spec` | object | See values | corev1.ServiceSpec |
 
 ### Ingress
+
+Maps to `spec.ingress` (IngressNetworkingV1):
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
 | `ingress.enabled` | bool | `false` | Enable ingress |
-| `ingress.className` | string | `""` | Ingress class name |
-| `ingress.hostname` | string | `""` | Hostname |
-| `ingress.path` | string | `/` | Path |
-| `ingress.pathType` | string | `Prefix` | Path type |
-| `ingress.tls` | bool | `false` | Enable TLS |
-| `ingress.tlsSecretName` | string | `""` | TLS secret name |
-| `ingress.annotations` | object | `{}` | Ingress annotations |
+| `ingress.metadata.labels` | object | `{}` | Ingress labels |
+| `ingress.metadata.annotations` | object | `{}` | Ingress annotations |
+| `ingress.spec.ingressClassName` | string | `""` | Ingress class |
+| `ingress.spec.rules` | list | `[]` | Ingress rules |
+| `ingress.spec.tls` | list | `[]` | TLS configuration |
 
-### Persistence
+### PersistentVolumeClaim
+
+Maps to `spec.persistentVolumeClaim` (PersistentVolumeClaimV1):
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
-| `persistence.enabled` | bool | `false` | Enable persistence |
-| `persistence.size` | string | `10Gi` | Storage size |
-| `persistence.storageClassName` | string | `""` | Storage class |
-| `persistence.accessModes` | list | `[ReadWriteOnce]` | Access modes |
+| `persistentVolumeClaim.enabled` | bool | `false` | Enable PVC |
+| `persistentVolumeClaim.metadata` | object | `{}` | PVC metadata |
+| `persistentVolumeClaim.spec` | object | See values | PVC spec |
+
+### ServiceAccount
+
+Maps to `spec.serviceAccount` (ServiceAccountV1):
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `serviceAccount.enabled` | bool | `true` | Enable service account |
+| `serviceAccount.metadata.name` | string | `""` | SA name |
+| `serviceAccount.metadata.labels` | object | `{}` | SA labels |
+| `serviceAccount.metadata.annotations` | object | `{}` | SA annotations |
+| `serviceAccount.imagePullSecrets` | list | `[]` | Image pull secrets |
+| `serviceAccount.automountServiceAccountToken` | bool | `true` | Mount SA token |
 
 ### External Grafana
 
+Maps to `spec.external` - manage existing Grafana instances:
+
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
-| `external.enabled` | bool | `false` | Manage external Grafana instance |
+| `external.enabled` | bool | `false` | Enable external mode |
 | `external.url` | string | `""` | External Grafana URL |
-| `external.adminCredentialsSecret` | string | `""` | Secret with admin credentials |
+| `external.apiKey` | object | `{}` | API key secret reference |
+| `external.adminUser` | object | `{}` | Admin user secret reference |
+| `external.adminPassword` | object | `{}` | Admin password secret reference |
+| `external.tls` | object | `{}` | TLS configuration |
+
+### Client
+
+Maps to `spec.client` - operator-to-Grafana API settings:
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `client.useKubeAuth` | bool | - | Use Kubernetes auth |
+| `client.timeout` | int | - | Timeout in seconds |
+| `client.preferIngress` | bool | - | Prefer ingress for API |
+| `client.headers` | object | - | Custom HTTP headers |
+| `client.tls` | object | - | TLS configuration |
+
+### Route (OpenShift)
+
+Maps to `spec.route` (RouteOpenshiftV1):
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `route.enabled` | bool | `false` | Enable OpenShift Route |
+| `route.metadata` | object | `{}` | Route metadata |
+| `route.spec` | object | `{}` | Route spec |
+
+### HTTPRoute (Gateway API)
+
+Maps to `spec.httpRoute` (HTTPRouteV1):
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `httpRoute.enabled` | bool | `false` | Enable Gateway API HTTPRoute |
+| `httpRoute.metadata` | object | `{}` | HTTPRoute metadata |
+| `httpRoute.spec` | object | `{}` | HTTPRoute spec |
 
 ## Examples
 
 ### Basic Deployment
 
 ```yaml
-name: grafana
-namespace: monitoring
+metadata:
+  name: grafana
 version: "11.4.0"
 
 config:
   server:
     root_url: "https://grafana.example.com"
 
-deployment:
-  replicas: 1
-  resources:
-    requests:
-      cpu: 100m
-      memory: 256Mi
-```
-
-### With Ingress and TLS
-
-```yaml
-name: grafana
-namespace: monitoring
-
-ingress:
-  enabled: true
-  className: nginx
-  hostname: grafana.example.com
-  tls: true
-  annotations:
-    cert-manager.io/cluster-issuer: letsencrypt-prod
-
-config:
-  server:
-    root_url: "https://grafana.example.com"
-```
-
-### External Grafana (GitOps for existing instance)
-
-```yaml
-name: grafana-external
-namespace: monitoring
-
-external:
-  enabled: true
-  url: "https://grafana.example.com"
-  adminCredentialsSecret: grafana-admin-credentials
-
 instanceSelector:
   matchLabels:
-    dashboards: "grafana-external"
+    dashboards: "grafana"
+```
+
+### With Ingress
+
+```yaml
+ingress:
+  enabled: true
+  metadata:
+    annotations:
+      cert-manager.io/cluster-issuer: letsencrypt-prod
+  spec:
+    ingressClassName: nginx
+    rules:
+      - host: grafana.example.com
+        http:
+          paths:
+            - path: /
+              pathType: Prefix
+              backend:
+                service:
+                  name: grafana-service
+                  port:
+                    number: 3000
+    tls:
+      - hosts:
+          - grafana.example.com
+        secretName: grafana-tls
 ```
 
 ### With Persistence
 
 ```yaml
-name: grafana
-namespace: monitoring
-
-persistence:
+persistentVolumeClaim:
   enabled: true
-  size: 20Gi
-  storageClassName: fast-ssd
+  spec:
+    accessModes:
+      - ReadWriteOnce
+    resources:
+      requests:
+        storage: 20Gi
+    storageClassName: fast-ssd
+```
+
+### External Grafana (GitOps)
+
+```yaml
+external:
+  enabled: true
+  url: "https://grafana.example.com"
+  apiKey:
+    name: grafana-api-key
+    key: token
+
+instanceSelector:
+  matchLabels:
+    dashboards: "external-grafana"
 ```
 
 ### With OAuth (Authentik)
 
 ```yaml
-name: grafana
-namespace: monitoring
-
 config:
   server:
     root_url: "https://grafana.example.com"
@@ -188,10 +259,36 @@ config:
     role_attribute_path: "contains(groups[*], 'Grafana Admins') && 'Admin' || 'Viewer'"
 
 deployment:
-  env:
-    - name: GF_AUTH_GENERIC_OAUTH_CLIENT_SECRET
-      valueFrom:
-        secretKeyRef:
-          name: grafana-oauth
-          key: client-secret
+  spec:
+    template:
+      spec:
+        containers:
+          - name: grafana
+            env:
+              - name: GF_AUTH_GENERIC_OAUTH_CLIENT_SECRET
+                valueFrom:
+                  secretKeyRef:
+                    name: grafana-oauth
+                    key: client-secret
 ```
+
+## Template Structure
+
+```
+templates/
+├── _helpers.tpl        # Common helpers and labels
+├── _deployment.tpl     # Deployment spec partial
+├── _service.tpl        # Service spec partial
+├── _ingress.tpl        # Ingress spec partial
+├── _pvc.tpl            # PVC spec partial
+├── _serviceaccount.tpl # ServiceAccount spec partial
+├── _route.tpl          # OpenShift Route spec partial
+├── _httproute.tpl      # Gateway API HTTPRoute spec partial
+└── grafana.yaml        # Main Grafana CR template
+```
+
+## References
+
+- [Grafana Operator GitHub](https://github.com/grafana/grafana-operator)
+- [Grafana Operator API Reference](https://grafana.github.io/grafana-operator/docs/api/)
+- [Grafana Configuration](https://grafana.com/docs/grafana/latest/setup-grafana/configure-grafana/)

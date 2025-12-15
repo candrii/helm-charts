@@ -1,212 +1,258 @@
 # =============================================================================
-# GRAFANA OPERATOR - GRAFANA INSTANCE
-# Grafana CRD for deploying Grafana via grafana-operator
+# GRAFANA OPERATOR - GRAFANA CRD
+# Maps directly to grafana.integreatly.org/v1beta1 Grafana spec
+# https://grafana.github.io/grafana-operator/docs/api/
 # =============================================================================
 
-# Enable/disable Grafana deployment
+# Enable/disable Grafana CR creation
 enabled: true
 
-# Grafana instance name
-name: grafana
+# Grafana CR metadata
+metadata:
+  name: ""  # Defaults to release name
+  namespace: ""  # Defaults to release namespace
+  labels: {}
+  annotations: {}
 
-# Namespace for deployment (if empty, uses Release.Namespace)
-namespace: ""
+# =============================================================================
+# GRAFANA SPEC - Direct API mapping
+# All fields below map directly to spec.* in the Grafana CRD
+# =============================================================================
 
-# Grafana container image version/tag
+# Grafana version (container image tag)
 # Supports: version tag, full image reference, or SHA256 digest
 version: "11.4.0"
 
-# Labels to add to the Grafana CR (used for dashboard/datasource selectors)
-labels:
-  dashboards: "grafana"
+# Grafana configuration (grafana.ini sections)
+# Maps to spec.config
+config:
+  log:
+    mode: "console"
+  server: {}
+  security: {}
+  auth: {}
+  # Add any grafana.ini section here
 
-# Instance label selector for dashboards and datasources
-# Dashboards/Datasources with matching instanceSelector will be synced to this Grafana
+# Instance selector for dashboards/datasources
+# GrafanaDashboard/GrafanaDatasource CRs with matching labels will sync to this instance
 instanceSelector:
   matchLabels:
     dashboards: "grafana"
 
-# =============================================================================
-# GRAFANA CONFIGURATION (grafana.ini sections)
-# =============================================================================
-config:
-  log:
-    mode: "console"
-    level: "info"
-  server:
-    root_url: ""  # e.g., https://grafana.example.com
-  auth:
-    disable_login_form: "false"
-  auth.anonymous:
-    enabled: "false"
-  security:
-    admin_user: ""      # Leave empty to use secret
-    admin_password: ""  # Leave empty to use secret
-
-# =============================================================================
-# ADMIN CREDENTIALS
-# =============================================================================
-# Disable operator-created default admin secret (if using external auth)
+# Disable default admin credentials secret creation
 disableDefaultAdminSecret: false
 
-# Reference existing secret for admin credentials
-# adminCredentialsSecret: grafana-admin-credentials
+# Disable default security context (Pod, Container, or All)
+disableDefaultSecurityContext: ""
+
+# Suspend reconciliation
+suspend: false
+
+# Grafana preferences
+preferences: {}
+  # homeDashboardUid: ""
+
+# Jsonnet library configuration
+jsonnet: {}
+  # libraryLabelSelector:
+  #   matchLabels:
+  #     jsonnet: "true"
 
 # =============================================================================
-# DEPLOYMENT CONFIGURATION
+# DEPLOYMENT - spec.deployment
+# Maps to DeploymentV1 (metadata + spec)
 # =============================================================================
 deployment:
-  # Number of replicas
-  replicas: 1
-
-  # Additional labels for deployment
-  labels: {}
-
-  # Additional annotations for deployment
-  annotations: {}
-
-  # Pod-level security context
-  securityContext:
-    runAsNonRoot: true
-    runAsUser: 472
-    runAsGroup: 472
-    fsGroup: 472
-
-  # Container-level security context
-  containerSecurityContext:
-    allowPrivilegeEscalation: false
-    capabilities:
-      drop:
-        - ALL
-    readOnlyRootFilesystem: false
-
-  # Resource requests and limits
-  resources:
-    requests:
-      cpu: 100m
-      memory: 256Mi
-    limits:
-      memory: 512Mi
-
-  # Node selector
-  nodeSelector: {}
-
-  # Tolerations
-  tolerations: []
-
-  # Affinity rules
-  affinity: {}
-
-  # Extra environment variables
-  env: []
-  # - name: GF_INSTALL_PLUGINS
-  #   value: "grafana-clock-panel"
-
-  # Extra volumes
-  extraVolumes: []
-
-  # Extra volume mounts
-  extraVolumeMounts: []
+  metadata:
+    labels: {}
+    annotations: {}
+  spec:
+    replicas: 1
+    # strategy:
+    #   type: RollingUpdate
+    #   rollingUpdate:
+    #     maxSurge: 1
+    #     maxUnavailable: 0
+    template:
+      metadata:
+        labels: {}
+        annotations: {}
+      spec:
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 472
+          runAsGroup: 472
+          fsGroup: 472
+        containers:
+          - name: grafana
+            securityContext:
+              allowPrivilegeEscalation: false
+              capabilities:
+                drop:
+                  - ALL
+            resources:
+              requests:
+                cpu: 100m
+                memory: 256Mi
+              limits:
+                memory: 512Mi
+            env: []
+            # - name: GF_INSTALL_PLUGINS
+            #   value: "grafana-clock-panel"
+            volumeMounts: []
+        volumes: []
+        nodeSelector: {}
+        tolerations: []
+        affinity: {}
+        # initContainers: []
 
 # =============================================================================
-# SERVICE CONFIGURATION
+# SERVICE - spec.service
+# Maps to ServiceV1 (metadata + corev1.ServiceSpec)
 # =============================================================================
 service:
-  # Service type: ClusterIP, NodePort, LoadBalancer
-  type: ClusterIP
-
-  # Service port
-  port: 3000
-
-  # Additional annotations
-  annotations: {}
-
-  # Additional labels
-  labels: {}
+  metadata:
+    labels: {}
+    annotations: {}
+  spec:
+    type: ClusterIP
+    ports:
+      - name: grafana
+        port: 3000
+        protocol: TCP
+        targetPort: 3000
 
 # =============================================================================
-# INGRESS CONFIGURATION
+# INGRESS - spec.ingress
+# Maps to IngressNetworkingV1 (metadata + networkingv1.IngressSpec)
 # =============================================================================
 ingress:
   enabled: false
-
-  # Ingress class name
-  className: ""
-
-  # Hostname
-  hostname: ""
-
-  # Path
-  path: /
-
-  # Path type: Prefix, Exact, ImplementationSpecific
-  pathType: Prefix
-
-  # TLS configuration
-  tls: false
-  tlsSecretName: ""
-
-  # Additional annotations
-  annotations: {}
-  # cert-manager.io/cluster-issuer: letsencrypt-prod
+  metadata:
+    labels: {}
+    annotations: {}
+    # cert-manager.io/cluster-issuer: letsencrypt-prod
+  spec:
+    ingressClassName: ""
+    rules: []
+    # - host: grafana.example.com
+    #   http:
+    #     paths:
+    #       - path: /
+    #         pathType: Prefix
+    #         backend:
+    #           service:
+    #             name: grafana-service
+    #             port:
+    #               number: 3000
+    tls: []
+    # - hosts:
+    #     - grafana.example.com
+    #   secretName: grafana-tls
 
 # =============================================================================
-# PERSISTENCE CONFIGURATION
+# PERSISTENT VOLUME CLAIM - spec.persistentVolumeClaim
+# Maps to PersistentVolumeClaimV1 (metadata + PersistentVolumeClaimV1Spec)
 # =============================================================================
-persistence:
+persistentVolumeClaim:
   enabled: false
-
-  # Storage size
-  size: 10Gi
-
-  # Storage class (empty uses default)
-  storageClassName: ""
-
-  # Access modes
-  accessModes:
-    - ReadWriteOnce
+  metadata:
+    labels: {}
+    annotations: {}
+  spec:
+    accessModes:
+      - ReadWriteOnce
+    resources:
+      requests:
+        storage: 10Gi
+    # storageClassName: ""
+    # volumeMode: Filesystem
 
 # =============================================================================
-# EXTERNAL GRAFANA (for managing existing Grafana instances)
+# SERVICE ACCOUNT - spec.serviceAccount
+# Maps to ServiceAccountV1
+# =============================================================================
+serviceAccount:
+  enabled: true
+  metadata:
+    name: ""  # Defaults to grafana-sa
+    labels: {}
+    annotations: {}
+  imagePullSecrets: []
+  automountServiceAccountToken: true
+
+# =============================================================================
+# CLIENT - spec.client
+# Operator-to-Grafana API client settings
+# =============================================================================
+client: {}
+  # useKubeAuth: false
+  # timeout: 10
+  # preferIngress: false
+  # headers: {}
+  # tls:
+  #   insecureSkipVerify: false
+  #   certSecretRef:
+  #     name: ""
+  #     namespace: ""
+
+# =============================================================================
+# EXTERNAL - spec.external
+# For managing existing Grafana instances (not deployed by operator)
 # =============================================================================
 external:
   enabled: false
-
-  # URL of external Grafana instance
   url: ""
-
-  # Admin credentials secret reference
-  adminCredentialsSecret: ""
-
-# =============================================================================
-# SERVICE ACCOUNT
-# =============================================================================
-serviceAccount:
-  # Create service account
-  create: true
-
-  # Service account name (if empty, uses release name)
-  name: ""
-
-  # Additional annotations
-  annotations: {}
-
-# =============================================================================
-# GRAFANA PREFERENCES
-# =============================================================================
-preferences:
-  # Home dashboard UID
-  homeDashboardUid: ""
+  # API key authentication
+  apiKey: {}
+    # name: grafana-api-key
+    # key: api-key
+  # Admin user/password authentication
+  adminUser: {}
+    # name: grafana-admin
+    # key: username
+  adminPassword: {}
+    # name: grafana-admin
+    # key: password
+  tls: {}
+    # insecureSkipVerify: false
+    # certSecretRef:
+    #   name: ""
+    #   namespace: ""
 
 # =============================================================================
-# ADDITIONAL CONFIGURATION
+# ROUTE - spec.route (OpenShift only)
+# Maps to RouteOpenshiftV1
 # =============================================================================
+route:
+  enabled: false
+  metadata:
+    labels: {}
+    annotations: {}
+  spec: {}
+    # host: grafana.apps.example.com
+    # path: /
+    # tls:
+    #   termination: edge
+    #   insecureEdgeTerminationPolicy: Redirect
 
-# Suspend reconciliation (pause operator management)
-suspend: false
-
-# Jsonnet library selector
-jsonnet: {}
-# libraryLabelSelector:
-#   matchLabels:
-#     jsonnet: "true"
+# =============================================================================
+# HTTP ROUTE - spec.httpRoute (Gateway API)
+# Maps to HTTPRouteV1
+# =============================================================================
+httpRoute:
+  enabled: false
+  metadata:
+    labels: {}
+    annotations: {}
+  spec: {}
+    # parentRefs:
+    #   - name: gateway
+    #     namespace: gateway-system
+    # hostnames:
+    #   - grafana.example.com
+    # rules:
+    #   - matches:
+    #       - path:
+    #           type: PathPrefix
+    #           value: /
