@@ -1,0 +1,212 @@
+# =============================================================================
+# GRAFANA OPERATOR - GRAFANA INSTANCE
+# Grafana CRD for deploying Grafana via grafana-operator
+# =============================================================================
+
+# Enable/disable Grafana deployment
+enabled: true
+
+# Grafana instance name
+name: grafana
+
+# Namespace for deployment (if empty, uses Release.Namespace)
+namespace: ""
+
+# Grafana container image version/tag
+# Supports: version tag, full image reference, or SHA256 digest
+version: "11.4.0"
+
+# Labels to add to the Grafana CR (used for dashboard/datasource selectors)
+labels:
+  dashboards: "grafana"
+
+# Instance label selector for dashboards and datasources
+# Dashboards/Datasources with matching instanceSelector will be synced to this Grafana
+instanceSelector:
+  matchLabels:
+    dashboards: "grafana"
+
+# =============================================================================
+# GRAFANA CONFIGURATION (grafana.ini sections)
+# =============================================================================
+config:
+  log:
+    mode: "console"
+    level: "info"
+  server:
+    root_url: ""  # e.g., https://grafana.example.com
+  auth:
+    disable_login_form: "false"
+  auth.anonymous:
+    enabled: "false"
+  security:
+    admin_user: ""      # Leave empty to use secret
+    admin_password: ""  # Leave empty to use secret
+
+# =============================================================================
+# ADMIN CREDENTIALS
+# =============================================================================
+# Disable operator-created default admin secret (if using external auth)
+disableDefaultAdminSecret: false
+
+# Reference existing secret for admin credentials
+# adminCredentialsSecret: grafana-admin-credentials
+
+# =============================================================================
+# DEPLOYMENT CONFIGURATION
+# =============================================================================
+deployment:
+  # Number of replicas
+  replicas: 1
+
+  # Additional labels for deployment
+  labels: {}
+
+  # Additional annotations for deployment
+  annotations: {}
+
+  # Pod-level security context
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 472
+    runAsGroup: 472
+    fsGroup: 472
+
+  # Container-level security context
+  containerSecurityContext:
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop:
+        - ALL
+    readOnlyRootFilesystem: false
+
+  # Resource requests and limits
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      memory: 512Mi
+
+  # Node selector
+  nodeSelector: {}
+
+  # Tolerations
+  tolerations: []
+
+  # Affinity rules
+  affinity: {}
+
+  # Extra environment variables
+  env: []
+  # - name: GF_INSTALL_PLUGINS
+  #   value: "grafana-clock-panel"
+
+  # Extra volumes
+  extraVolumes: []
+
+  # Extra volume mounts
+  extraVolumeMounts: []
+
+# =============================================================================
+# SERVICE CONFIGURATION
+# =============================================================================
+service:
+  # Service type: ClusterIP, NodePort, LoadBalancer
+  type: ClusterIP
+
+  # Service port
+  port: 3000
+
+  # Additional annotations
+  annotations: {}
+
+  # Additional labels
+  labels: {}
+
+# =============================================================================
+# INGRESS CONFIGURATION
+# =============================================================================
+ingress:
+  enabled: false
+
+  # Ingress class name
+  className: ""
+
+  # Hostname
+  hostname: ""
+
+  # Path
+  path: /
+
+  # Path type: Prefix, Exact, ImplementationSpecific
+  pathType: Prefix
+
+  # TLS configuration
+  tls: false
+  tlsSecretName: ""
+
+  # Additional annotations
+  annotations: {}
+  # cert-manager.io/cluster-issuer: letsencrypt-prod
+
+# =============================================================================
+# PERSISTENCE CONFIGURATION
+# =============================================================================
+persistence:
+  enabled: false
+
+  # Storage size
+  size: 10Gi
+
+  # Storage class (empty uses default)
+  storageClassName: ""
+
+  # Access modes
+  accessModes:
+    - ReadWriteOnce
+
+# =============================================================================
+# EXTERNAL GRAFANA (for managing existing Grafana instances)
+# =============================================================================
+external:
+  enabled: false
+
+  # URL of external Grafana instance
+  url: ""
+
+  # Admin credentials secret reference
+  adminCredentialsSecret: ""
+
+# =============================================================================
+# SERVICE ACCOUNT
+# =============================================================================
+serviceAccount:
+  # Create service account
+  create: true
+
+  # Service account name (if empty, uses release name)
+  name: ""
+
+  # Additional annotations
+  annotations: {}
+
+# =============================================================================
+# GRAFANA PREFERENCES
+# =============================================================================
+preferences:
+  # Home dashboard UID
+  homeDashboardUid: ""
+
+# =============================================================================
+# ADDITIONAL CONFIGURATION
+# =============================================================================
+
+# Suspend reconciliation (pause operator management)
+suspend: false
+
+# Jsonnet library selector
+jsonnet: {}
+# libraryLabelSelector:
+#   matchLabels:
+#     jsonnet: "true"
