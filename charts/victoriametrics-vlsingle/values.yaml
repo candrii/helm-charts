@@ -12,8 +12,8 @@ name: monitoring
 # Namespace for deployment
 namespace: monitoring
 
-# Data retention period (days)
-retentionPeriod: "30"
+# Data retention period (0 = unlimited/forever)
+retentionPeriod: "0"
 
 # Storage configuration
 storage:
