@@ -12,8 +12,8 @@ name: monitoring
 # Namespace for deployment
 namespace: monitoring
 
-# Data retention period
-retentionPeriod: "21d"
+# Data retention period (0 = unlimited/forever)
+retentionPeriod: "0"
 
 # Number of replicas
 replicaCount: 1
