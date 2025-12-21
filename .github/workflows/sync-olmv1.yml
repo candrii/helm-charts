@@ -1,0 +1,188 @@
+name: Sync OLMv1 Chart
+
+on:
+  workflow_dispatch:
+    inputs:
+      force:
+        description: 'Force sync even if no changes detected'
+        required: false
+        default: 'false'
+        type: boolean
+  schedule:
+    # Check for updates daily at 6 AM UTC
+    - cron: '0 6 * * *'
+
+permissions:
+  contents: write
+  pull-requests: write
+
+env:
+  UPSTREAM_REPO: operator-framework/operator-controller
+  CHART_PATH: helm/olmv1
+  LOCAL_CHART_DIR: charts/olmv1
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Get upstream commit for chart path
+        id: upstream
+        run: |
+          # Get the latest commit SHA that changed the helm/olmv1 directory
+          COMMIT_SHA=$(curl -s "https://api.github.com/repos/${{ env.UPSTREAM_REPO }}/commits?path=${{ env.CHART_PATH }}&per_page=1" | jq -r '.[0].sha // empty')
+          COMMIT_SHORT=$(echo "$COMMIT_SHA" | cut -c1-7)
+          COMMIT_DATE=$(curl -s "https://api.github.com/repos/${{ env.UPSTREAM_REPO }}/commits?path=${{ env.CHART_PATH }}&per_page=1" | jq -r '.[0].commit.committer.date // empty')
+          COMMIT_MSG=$(curl -s "https://api.github.com/repos/${{ env.UPSTREAM_REPO }}/commits?path=${{ env.CHART_PATH }}&per_page=1" | jq -r '.[0].commit.message // empty' | head -1)
+
+          if [ -z "$COMMIT_SHA" ]; then
+            echo "Failed to get upstream commit"
+            exit 1
+          fi
+
+          echo "commit_sha=$COMMIT_SHA" >> $GITHUB_OUTPUT
+          echo "commit_short=$COMMIT_SHORT" >> $GITHUB_OUTPUT
+          echo "commit_date=$COMMIT_DATE" >> $GITHUB_OUTPUT
+          echo "commit_msg=$COMMIT_MSG" >> $GITHUB_OUTPUT
+          echo "Upstream commit: $COMMIT_SHORT ($COMMIT_DATE)"
+          echo "Message: $COMMIT_MSG"
+
+      - name: Get current local state
+        id: local
+        run: |
+          if [ -f "${{ env.LOCAL_CHART_DIR }}/Chart.yaml" ]; then
+            LOCAL_VERSION=$(grep '^version:' "${{ env.LOCAL_CHART_DIR }}/Chart.yaml" | sed 's/version:[[:space:]]*"\{0,1\}\([^"]*\)"\{0,1\}/\1/')
+            echo "version=$LOCAL_VERSION" >> $GITHUB_OUTPUT
+            echo "exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+          fi
+
+          # Get tracked upstream commit from README
+          if [ -f "${{ env.LOCAL_CHART_DIR }}/README.md" ]; then
+            TRACKED_COMMIT=$(grep -oP '<!-- olmv1-upstream-commit: \K[a-f0-9]+' "${{ env.LOCAL_CHART_DIR }}/README.md" || echo "")
+            echo "tracked_commit=$TRACKED_COMMIT" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Check if update needed
+        id: check
+        run: |
+          UPSTREAM_COMMIT="${{ steps.upstream.outputs.commit_sha }}"
+          TRACKED_COMMIT="${{ steps.local.outputs.tracked_commit }}"
+
+          if [ "${{ steps.local.outputs.exists }}" != "true" ]; then
+            echo "Local chart does not exist, will create"
+            echo "needs_update=true" >> $GITHUB_OUTPUT
+          elif [ -z "$TRACKED_COMMIT" ]; then
+            echo "No tracked commit found, will sync"
+            echo "needs_update=true" >> $GITHUB_OUTPUT
+          elif [ "$UPSTREAM_COMMIT" != "$TRACKED_COMMIT" ]; then
+            echo "Commit mismatch: upstream=${{ steps.upstream.outputs.commit_short }}, tracked=${TRACKED_COMMIT:0:7}"
+            echo "needs_update=true" >> $GITHUB_OUTPUT
+          elif [ "${{ github.event.inputs.force }}" = "true" ]; then
+            echo "Force sync requested"
+            echo "needs_update=true" >> $GITHUB_OUTPUT
+          else
+            echo "No update needed (upstream commit unchanged)"
+            echo "needs_update=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Download upstream chart
+        if: steps.check.outputs.needs_update == 'true'
+        id: download
+        run: |
+          mkdir -p /tmp/upstream
+          cd /tmp/upstream
+
+          COMMIT="${{ steps.upstream.outputs.commit_sha }}"
+          echo "Downloading from commit: $COMMIT"
+
+          # Download the chart directory from upstream at specific commit
+          curl -sL "https://github.com/${{ env.UPSTREAM_REPO }}/archive/${COMMIT}.tar.gz" | tar xz --strip-components=2 --wildcards "*/helm/olmv1"
+
+          if [ ! -f "Chart.yaml" ]; then
+            echo "Chart.yaml not found in downloaded content"
+            ls -la
+            exit 1
+          fi
+
+          echo "Download successful"
+
+      - name: Update local chart
+        if: steps.check.outputs.needs_update == 'true'
+        run: |
+          # Preserve local README if it exists
+          LOCAL_README=""
+          if [ -f "${{ env.LOCAL_CHART_DIR }}/README.md" ]; then
+            LOCAL_README=$(cat "${{ env.LOCAL_CHART_DIR }}/README.md")
+          fi
+
+          # Remove old chart content
+          rm -rf "${{ env.LOCAL_CHART_DIR }}/templates" "${{ env.LOCAL_CHART_DIR }}/base" "${{ env.LOCAL_CHART_DIR }}/crds"
+          rm -f "${{ env.LOCAL_CHART_DIR }}/Chart.yaml" "${{ env.LOCAL_CHART_DIR }}/values.yaml" "${{ env.LOCAL_CHART_DIR }}/.helmignore"
+
+          # Create chart directory if it doesn't exist
+          mkdir -p "${{ env.LOCAL_CHART_DIR }}"
+
+          # Copy upstream chart
+          cp -r /tmp/upstream/* "${{ env.LOCAL_CHART_DIR }}/"
+
+          # Bump chart version if chart already existed
+          if [ "${{ steps.local.outputs.exists }}" = "true" ]; then
+            CURRENT_VERSION="${{ steps.local.outputs.version }}"
+            MAJOR=$(echo "$CURRENT_VERSION" | cut -d. -f1)
+            MINOR=$(echo "$CURRENT_VERSION" | cut -d. -f2)
+            PATCH=$(echo "$CURRENT_VERSION" | cut -d. -f3)
+            NEW_PATCH=$((PATCH + 1))
+            NEW_VERSION="$MAJOR.$MINOR.$NEW_PATCH"
+            sed -i "s/^version:.*/version: \"$NEW_VERSION\"/" "${{ env.LOCAL_CHART_DIR }}/Chart.yaml"
+            echo "Bumped chart version: $CURRENT_VERSION -> $NEW_VERSION"
+          fi
+
+          # Restore local README and update commit marker
+          if [ -n "$LOCAL_README" ]; then
+            echo "$LOCAL_README" > "${{ env.LOCAL_CHART_DIR }}/README.md"
+            UPSTREAM_COMMIT="${{ steps.upstream.outputs.commit_sha }}"
+            # Update or add commit marker
+            if grep -q '<!-- olmv1-upstream-commit:' "${{ env.LOCAL_CHART_DIR }}/README.md"; then
+              sed -i "s/<!-- olmv1-upstream-commit: [a-f0-9]* -->/<!-- olmv1-upstream-commit: $UPSTREAM_COMMIT -->/" "${{ env.LOCAL_CHART_DIR }}/README.md"
+            else
+              sed -i "2i\\<!-- olmv1-upstream-commit: $UPSTREAM_COMMIT -->" "${{ env.LOCAL_CHART_DIR }}/README.md"
+            fi
+          fi
+
+      - name: Create Pull Request
+        if: steps.check.outputs.needs_update == 'true'
+        uses: peter-evans/create-pull-request@v7
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "chore(olmv1): sync chart from upstream ${{ steps.upstream.outputs.commit_short }}"
+          title: "chore(olmv1): sync chart from upstream ${{ steps.upstream.outputs.commit_short }}"
+          body: |
+            ## Summary
+
+            Syncs OLMv1 Helm chart from upstream [operator-framework/operator-controller](https://github.com/operator-framework/operator-controller).
+
+            - **Upstream commit**: [`${{ steps.upstream.outputs.commit_short }}`](https://github.com/${{ env.UPSTREAM_REPO }}/commit/${{ steps.upstream.outputs.commit_sha }})
+            - **Commit date**: ${{ steps.upstream.outputs.commit_date }}
+            - **Commit message**: ${{ steps.upstream.outputs.commit_msg }}
+
+            ## Changes
+
+            This PR updates the local copy of the OLMv1 chart to match the upstream.
+
+            ## References
+
+            - [Upstream Chart](https://github.com/${{ env.UPSTREAM_REPO }}/tree/${{ steps.upstream.outputs.commit_sha }}/${{ env.CHART_PATH }})
+            - [OLMv1 Documentation](https://operator-framework.github.io/operator-controller/)
+          branch: sync/olmv1-${{ steps.upstream.outputs.commit_short }}
+          delete-branch: true
+          labels: |
+            automated
+            olmv1
+            sync
