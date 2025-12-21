@@ -96,20 +96,6 @@ jobs:
         if: steps.check.outputs.needs_update == 'true'
         id: download
         run: |
-<<<<<<< HEAD
-          mkdir -p /tmp/upstream
-          cd /tmp/upstream
-
-          COMMIT="${{ steps.upstream.outputs.commit_sha }}"
-          echo "Downloading from commit: $COMMIT"
-
-          # Download the chart directory from upstream at specific commit
-          curl -sL "https://github.com/${{ env.UPSTREAM_REPO }}/archive/${COMMIT}.tar.gz" | tar xz --strip-components=2 --wildcards "*/helm/olmv1"
-
-          if [ ! -f "Chart.yaml" ]; then
-            echo "Chart.yaml not found in downloaded content"
-            ls -la
-=======
           COMMIT="${{ steps.upstream.outputs.commit_sha }}"
           echo "Downloading from commit: $COMMIT"
 
@@ -151,16 +137,12 @@ jobs:
           if [ ! -f "/tmp/upstream/Chart.yaml" ]; then
             echo "Chart.yaml not found after copy"
             ls -la /tmp/upstream
->>>>>>> 424a19b (feat: add olmv1 chart)
             exit 1
           fi
 
           echo "Download successful"
-<<<<<<< HEAD
-=======
           cat /tmp/upstream/Chart.yaml
           rm -rf "$EXTRACTED_DIR" /tmp/upstream.tar.gz
->>>>>>> 424a19b (feat: add olmv1 chart)
 
       - name: Update local chart
         if: steps.check.outputs.needs_update == 'true'
@@ -207,11 +189,7 @@ jobs:
 
       - name: Create Pull Request
         if: steps.check.outputs.needs_update == 'true'
-<<<<<<< HEAD
         uses: peter-evans/create-pull-request@v8
-=======
-        uses: peter-evans/create-pull-request@v7
->>>>>>> 424a19b (feat: add olmv1 chart)
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           commit-message: "chore(olmv1): sync chart from upstream ${{ steps.upstream.outputs.commit_short }}"
