@@ -1,0 +1,90 @@
+apiVersion: v1
+entries:
+  argocd-victoriametrics-stack:
+  - apiVersion: v2
+    appVersion: 1.0.0
+    created: "2025-12-21T08:15:33.483010058Z"
+    description: ArgoCD Application to deploy Victoria Metrics stack with operator
+    digest: 20936018519d2fa26bb59b9704f9de0c13c7f90d629f9c5748cef5fed31ac84a
+    keywords:
+    - monitoring
+    - victoriametrics
+    - victorialogs
+    - argocd
+    - operator
+    - observability
+    name: argocd-victoriametrics-stack
+    type: application
+    urls:
+    - https://github.com/candrii/helm-charts/releases/download/argocd-victoriametrics-stack-1.2.0/argocd-victoriametrics-stack-1.2.0.tgz
+    version: 1.2.0
+  grafana-operator-grafana:
+  - apiVersion: v2
+    appVersion: 11.4.0
+    created: "2025-12-21T08:15:33.616556813Z"
+    description: Grafana CRD for Grafana Operator - deploys Grafana instance via operator
+    digest: 85b0b18767c24befe2895603eada6030448695ed33e4bae06f9a5575167c563c
+    keywords:
+    - grafana
+    - grafana-operator
+    - monitoring
+    - dashboards
+    - observability
+    name: grafana-operator-grafana
+    type: application
+    urls:
+    - https://github.com/candrii/helm-charts/releases/download/grafana-operator-grafana-0.2.1/grafana-operator-grafana-0.2.1.tgz
+    version: 0.2.1
+  victoriametrics-vlsingle:
+  - apiVersion: v2
+    appVersion: 1.0.0
+    created: "2025-12-21T08:15:33.763394238Z"
+    description: VLSingle CRD for Victoria Logs single instance deployment
+    digest: 3330d77ffffe71e334bac1ed2a83cb09ea9e176e1b0bdfd7f4615475b951458a
+    keywords:
+    - monitoring
+    - victorialogs
+    - vlsingle
+    - logs
+    - observability
+    name: victoriametrics-vlsingle
+    type: application
+    urls:
+    - https://github.com/candrii/helm-charts/releases/download/victoriametrics-vlsingle-0.0.2/victoriametrics-vlsingle-0.0.2.tgz
+    version: 0.0.2
+  victoriametrics-vmagent:
+  - apiVersion: v2
+    appVersion: 1.0.0
+    created: "2025-12-21T08:15:33.883184149Z"
+    description: VMAgent CRD for Victoria Metrics metrics collection agent
+    digest: dfef4a3d0feaf6532bb3fdb6f6a4547a9dfb8f6681ce303d2b168f4de4b176d8
+    keywords:
+    - monitoring
+    - victoriametrics
+    - vmagent
+    - metrics
+    - scraping
+    - observability
+    name: victoriametrics-vmagent
+    type: application
+    urls:
+    - https://github.com/candrii/helm-charts/releases/download/victoriametrics-vmagent-0.0.1/victoriametrics-vmagent-0.0.1.tgz
+    version: 0.0.1
+  victoriametrics-vmsingle:
+  - apiVersion: v2
+    appVersion: 1.0.0
+    created: "2025-12-21T08:15:33.995293728Z"
+    description: VMSingle CRD for Victoria Metrics single instance deployment
+    digest: 1904c261eee40373e5f3f753abd857367f9eff16b0c6913a8845ae507b229e2c
+    keywords:
+    - monitoring
+    - victoriametrics
+    - vmsingle
+    - metrics
+    - observability
+    name: victoriametrics-vmsingle
+    type: application
+    urls:
+    - https://github.com/candrii/helm-charts/releases/download/victoriametrics-vmsingle-0.0.3/victoriametrics-vmsingle-0.0.3.tgz
+    version: 0.0.3
+generated: "2025-12-21T08:15:33.995298988Z"
