@@ -35,6 +35,17 @@ entries:
     urls:
     - https://github.com/candrii/helm-charts/releases/download/grafana-operator-grafana-0.2.1/grafana-operator-grafana-0.2.1.tgz
     version: 0.2.1
+  olmv1:
+  - apiVersion: v2
+    created: "2025-12-21T08:29:12.010122329Z"
+    description: A Helm chart for OLMv1
+    digest: b098d4188a84584c6fc25f4330fda257aa8886407ed3827aa6949c73d6f8e73d
+    icon: https://raw.githubusercontent.com/operator-framework/operator-framework.io/refs/heads/master/static/tile70x70.png
+    name: olmv1
+    type: application
+    urls:
+    - https://github.com/candrii/helm-charts/releases/download/olmv1-0.1.0/olmv1-0.1.0.tgz
+    version: 0.1.0
   victoriametrics-vlsingle:
   - apiVersion: v2
     appVersion: 1.0.0
@@ -87,4 +98,4 @@ entries:
     urls:
     - https://github.com/candrii/helm-charts/releases/download/victoriametrics-vmsingle-0.0.3/victoriametrics-vmsingle-0.0.3.tgz
     version: 0.0.3
-generated: "2025-12-21T08:15:33.995298988Z"
+generated: "2025-12-21T08:29:12.570874247Z"
