@@ -1,0 +1,34 @@
+{{- if .Values.enabled }}
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMAlert
+metadata:
+  name: {{ .Values.name }}
+  namespace: {{ .Values.namespace }}
+spec:
+  replicaCount: {{ .Values.replicaCount }}
+  datasource:
+    url: {{ .Values.datasource.url | quote }}
+  remoteWrite:
+    url: {{ .Values.remoteWrite.url | quote }}
+  remoteRead:
+    url: {{ .Values.remoteRead.url | quote }}
+  {{- if .Values.notifier.url }}
+  notifier:
+    url: {{ .Values.notifier.url | quote }}
+  {{- end }}
+  evaluationInterval: {{ .Values.evaluationInterval | quote }}
+  # Reference VMRule CRDs by label selector
+  selectAllByDefault: true
+  resources:
+    {{- if .Values.resources.requests }}
+    requests:
+      {{- toYaml .Values.resources.requests | nindent 6 }}
+    {{- end }}
+    {{- if .Values.resources.limits }}
+    limits:
+      {{- toYaml .Values.resources.limits | nindent 6 }}
+    {{- end }}
+  extraArgs:
+    # Set default rule type to vlogs for VictoriaLogs rules
+    rule.defaultRuleType: "vlogs"
+{{- end }}

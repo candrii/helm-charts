@@ -1,0 +1,72 @@
+# =============================================================================
+# VICTORIA METRICS VMALERT
+# VMAlert CRD for alerting and recording rules
+# =============================================================================
+
+# Enable/disable VMAlert deployment
+enabled: true
+
+# VMAlert name
+name: monitoring
+
+# Namespace for deployment
+namespace: monitoring
+
+# Replica count
+replicaCount: 1
+
+# Data source configuration
+# For VictoriaLogs rules, we use vmauth to route queries
+datasource:
+  # URL for the datasource (vmauth proxy that routes to VLSingle/VMSingle)
+  url: "http://vmauth-monitoring.monitoring.svc:8427"
+
+# Remote write configuration (where to store recording rule results)
+remoteWrite:
+  url: "http://vmsingle-monitoring.monitoring.svc:8429"
+
+# Remote read configuration (for alert state restore)
+remoteRead:
+  url: "http://vmsingle-monitoring.monitoring.svc:8429"
+
+# Notifier configuration (Alertmanager)
+notifier:
+  # Set to empty if no alertmanager
+  url: ""
+
+# Resource requests and limits
+resources:
+  requests:
+    memory: 64Mi
+    cpu: 1m
+  limits:
+    memory: 128Mi
+
+# Evaluation interval for rules
+evaluationInterval: "30s"
+
+# Rule files to include (will be created as VMRule CRDs)
+# Format follows vmalert rule format
+rules:
+  # Recording rules for VictoriaLogs (fail2ban banned IPs)
+  fail2ban:
+    enabled: true
+    type: vlogs
+    interval: "1m"
+    rules:
+      # Count of currently banned IPs per instance and jail
+      - record: fail2ban_banned_ips_from_logs
+        expr: |
+          filename:"fail2ban.log" action:"Ban"
+          | stats by (instance, jail, banned_ip) count() as ban_count
+      # Total bans in last hour per instance
+      - record: fail2ban_total_bans_1h
+        expr: |
+          _time:1h filename:"fail2ban.log" action:"Ban"
+          | stats by (instance) count() as total_bans
+
+# VMServiceScrape configuration for self-monitoring
+serviceScrape:
+  enabled: true
+  interval: "30s"
+  scrapeTimeout: "10s"

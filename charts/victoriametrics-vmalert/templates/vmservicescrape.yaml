@@ -1,0 +1,17 @@
+{{- if and .Values.enabled .Values.serviceScrape.enabled }}
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMServiceScrape
+metadata:
+  name: {{ .Values.name }}-vmalert
+  namespace: {{ .Values.namespace }}
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: vmalert
+      app.kubernetes.io/instance: {{ .Values.name }}
+      managed-by: vm-operator
+  endpoints:
+    - port: http
+      interval: {{ .Values.serviceScrape.interval | quote }}
+      scrapeTimeout: {{ .Values.serviceScrape.scrapeTimeout | quote }}
+{{- end }}

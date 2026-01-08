@@ -79,6 +79,18 @@ vmagent:
   syncWave: "0"
 
 # =============================================================================
+# VMALERT - Victoria Metrics Alerting and Recording Rules
+# Custom chart for VMAlert CRD with VictoriaLogs support
+# =============================================================================
+vmalert:
+  enabled: false
+  chart:
+    repoURL: oci://ghcr.io/candrii/charts/victoriametrics-vmalert
+    version: "0.0.1"
+    nameOverride: vmalert
+  syncWave: "0"
+
+# =============================================================================
 # VMAUTH - Victoria Metrics Auth Proxy
 # Official chart: https://victoriametrics.github.io/helm-charts/
 # =============================================================================

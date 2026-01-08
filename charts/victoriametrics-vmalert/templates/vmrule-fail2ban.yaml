@@ -1,0 +1,20 @@
+{{- if and .Values.enabled .Values.rules.fail2ban.enabled }}
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMRule
+metadata:
+  name: {{ .Values.name }}-fail2ban
+  namespace: {{ .Values.namespace }}
+  labels:
+    app.kubernetes.io/name: vmalert
+    app.kubernetes.io/instance: {{ .Values.name }}
+spec:
+  groups:
+    - name: fail2ban-logs
+      type: {{ .Values.rules.fail2ban.type }}
+      interval: {{ .Values.rules.fail2ban.interval | quote }}
+      rules:
+        {{- range .Values.rules.fail2ban.rules }}
+        - record: {{ .record }}
+          expr: {{ .expr | quote }}
+        {{- end }}
+{{- end }}

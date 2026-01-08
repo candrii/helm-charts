@@ -1,0 +1,10 @@
+# =============================================================================
+# VICTORIA METRICS VMALERT CHART
+# Deploys VMAlert CRD for alerting and recording rules
+# =============================================================================
+apiVersion: v2
+name: victoriametrics-vmalert
+description: VMAlert for VictoriaMetrics/VictoriaLogs alerting and recording rules
+type: application
+version: 0.0.1
+appVersion: "1.0.0"
