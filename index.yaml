@@ -81,6 +81,17 @@ entries:
     urls:
     - https://github.com/candrii/helm-charts/releases/download/victoriametrics-vmagent-0.0.1/victoriametrics-vmagent-0.0.1.tgz
     version: 0.0.1
+  victoriametrics-vmalert:
+  - apiVersion: v2
+    appVersion: 1.0.0
+    created: "2026-01-08T22:44:52.310755961Z"
+    description: VMAlert for VictoriaMetrics/VictoriaLogs alerting and recording rules
+    digest: ccf1d95d8ccae60085cc2610ff10e9d0c99b2c6a6faa87f6356d37a2943a17ab
+    name: victoriametrics-vmalert
+    type: application
+    urls:
+    - https://github.com/candrii/helm-charts/releases/download/victoriametrics-vmalert-0.0.1/victoriametrics-vmalert-0.0.1.tgz
+    version: 0.0.1
   victoriametrics-vmsingle:
   - apiVersion: v2
     appVersion: 1.0.0
@@ -98,4 +109,4 @@ entries:
     urls:
     - https://github.com/candrii/helm-charts/releases/download/victoriametrics-vmsingle-0.0.3/victoriametrics-vmsingle-0.0.3.tgz
     version: 0.0.3
-generated: "2025-12-21T08:29:12.570874247Z"
+generated: "2026-01-08T22:44:52.310763655Z"
