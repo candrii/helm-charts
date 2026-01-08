@@ -23,6 +23,7 @@ helm pull oci://ghcr.io/candrii/charts/victoriametrics-vmsingle --version 0.1.0
 | [olmv1](charts/olmv1/) | 0.1.0 | A Helm chart for OLMv1 |
 | [victoriametrics-vlsingle](charts/victoriametrics-vlsingle/) | 0.0.2 | VLSingle CRD for Victoria Logs single instance deployment |
 | [victoriametrics-vmagent](charts/victoriametrics-vmagent/) | 0.0.1 | VMAgent CRD for Victoria Metrics metrics collection agent |
+| [victoriametrics-vmalert](charts/victoriametrics-vmalert/) | 0.0.1 | VMAlert for VictoriaMetrics/VictoriaLogs alerting and recording rules |
 | [victoriametrics-vmsingle](charts/victoriametrics-vmsingle/) | 0.0.3 | VMSingle CRD for Victoria Metrics single instance deployment |
 
 ---
