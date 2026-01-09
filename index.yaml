@@ -49,6 +49,22 @@ entries:
   victoriametrics-vlsingle:
   - apiVersion: v2
     appVersion: 1.0.0
+    created: "2026-01-09T06:24:27.724380028Z"
+    description: VLSingle CRD for Victoria Logs single instance deployment
+    digest: bd969eba0c298a5fd4674a52d4f9512d3391d1af68b46f133a506fabb2bc1754
+    keywords:
+    - monitoring
+    - victorialogs
+    - vlsingle
+    - logs
+    - observability
+    name: victoriametrics-vlsingle
+    type: application
+    urls:
+    - https://github.com/candrii/helm-charts/releases/download/victoriametrics-vlsingle-0.0.3/victoriametrics-vlsingle-0.0.3.tgz
+    version: 0.0.3
+  - apiVersion: v2
+    appVersion: 1.0.0
     created: "2025-12-21T08:15:33.763394238Z"
     description: VLSingle CRD for Victoria Logs single instance deployment
     digest: 3330d77ffffe71e334bac1ed2a83cb09ea9e176e1b0bdfd7f4615475b951458a
@@ -64,6 +80,23 @@ entries:
     - https://github.com/candrii/helm-charts/releases/download/victoriametrics-vlsingle-0.0.2/victoriametrics-vlsingle-0.0.2.tgz
     version: 0.0.2
   victoriametrics-vmagent:
+  - apiVersion: v2
+    appVersion: 1.0.0
+    created: "2026-01-09T06:24:27.879615941Z"
+    description: VMAgent CRD for Victoria Metrics metrics collection agent
+    digest: a308a8e0f71eec493dd8f4841059115ca997b04f0528206c28544f0a45c868bd
+    keywords:
+    - monitoring
+    - victoriametrics
+    - vmagent
+    - metrics
+    - scraping
+    - observability
+    name: victoriametrics-vmagent
+    type: application
+    urls:
+    - https://github.com/candrii/helm-charts/releases/download/victoriametrics-vmagent-0.0.2/victoriametrics-vmagent-0.0.2.tgz
+    version: 0.0.2
   - apiVersion: v2
     appVersion: 1.0.0
     created: "2025-12-21T08:15:33.883184149Z"
@@ -84,6 +117,16 @@ entries:
   victoriametrics-vmalert:
   - apiVersion: v2
     appVersion: 1.0.0
+    created: "2026-01-09T06:24:28.030137387Z"
+    description: VMAlert for VictoriaMetrics/VictoriaLogs alerting and recording rules
+    digest: 88f0d139cd17591ff8657c94f667d27e43355913afc83887b6ef5b805b8d96a1
+    name: victoriametrics-vmalert
+    type: application
+    urls:
+    - https://github.com/candrii/helm-charts/releases/download/victoriametrics-vmalert-0.0.2/victoriametrics-vmalert-0.0.2.tgz
+    version: 0.0.2
+  - apiVersion: v2
+    appVersion: 1.0.0
     created: "2026-01-08T22:44:52.310755961Z"
     description: VMAlert for VictoriaMetrics/VictoriaLogs alerting and recording rules
     digest: ccf1d95d8ccae60085cc2610ff10e9d0c99b2c6a6faa87f6356d37a2943a17ab
@@ -93,6 +136,22 @@ entries:
     - https://github.com/candrii/helm-charts/releases/download/victoriametrics-vmalert-0.0.1/victoriametrics-vmalert-0.0.1.tgz
     version: 0.0.1
   victoriametrics-vmsingle:
+  - apiVersion: v2
+    appVersion: 1.0.0
+    created: "2026-01-09T06:24:28.185394604Z"
+    description: VMSingle CRD for Victoria Metrics single instance deployment
+    digest: 7482f1237ad643a822317a067407a2e31d160f43fa2d173e7db5f6047f3fd786
+    keywords:
+    - monitoring
+    - victoriametrics
+    - vmsingle
+    - metrics
+    - observability
+    name: victoriametrics-vmsingle
+    type: application
+    urls:
+    - https://github.com/candrii/helm-charts/releases/download/victoriametrics-vmsingle-0.0.4/victoriametrics-vmsingle-0.0.4.tgz
+    version: 0.0.4
   - apiVersion: v2
     appVersion: 1.0.0
     created: "2025-12-21T08:15:33.995293728Z"
@@ -109,4 +168,4 @@ entries:
     urls:
     - https://github.com/candrii/helm-charts/releases/download/victoriametrics-vmsingle-0.0.3/victoriametrics-vmsingle-0.0.3.tgz
     version: 0.0.3
-generated: "2026-01-08T22:44:52.310763655Z"
+generated: "2026-01-09T06:24:28.18541418Z"
