@@ -20,7 +20,7 @@ helm pull oci://ghcr.io/candrii/charts/victoriametrics-vmsingle --version 0.1.0
 |-------|---------|-------------|
 | [argocd-victoriametrics-stack](charts/argocd-victoriametrics-stack/) | 1.2.0 | ArgoCD Application to deploy Victoria Metrics stack with operator |
 | [grafana-operator-grafana](charts/grafana-operator-grafana/) | 0.2.1 | Grafana CRD for Grafana Operator - deploys Grafana instance via operator |
-| [olmv1](charts/olmv1/) | 0.1.0 | A Helm chart for OLMv1 |
+| [olmv1](charts/olmv1/) | 0.1.1 | A Helm chart for OLMv1 |
 | [victoriametrics-vlsingle](charts/victoriametrics-vlsingle/) | 0.0.3 | VLSingle CRD for Victoria Logs single instance deployment |
 | [victoriametrics-vmagent](charts/victoriametrics-vmagent/) | 0.0.2 | VMAgent CRD for Victoria Metrics metrics collection agent |
 | [victoriametrics-vmalert](charts/victoriametrics-vmalert/) | 0.0.2 | VMAlert for VictoriaMetrics/VictoriaLogs alerting and recording rules |
