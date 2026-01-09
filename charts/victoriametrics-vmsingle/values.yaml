@@ -40,7 +40,8 @@ extraArgs:
 
 # VMServiceScrape configuration for self-monitoring
 serviceScrape:
-  enabled: true
+  # Disabled by default - enable to scrape vmsingle's own metrics
+  enabled: false
   # Scrape interval
   interval: "30s"
   # Scrape timeout

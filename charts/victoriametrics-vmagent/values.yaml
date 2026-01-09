@@ -68,3 +68,16 @@ tolerations: []
 
 # Affinity
 affinity: {}
+
+# VMServiceScrape configuration for self-monitoring
+serviceScrape:
+  # Disabled by default - enable to scrape vmagent's own metrics
+  enabled: false
+  # Scrape interval
+  interval: "30s"
+  # Scrape timeout
+  scrapeTimeout: "10s"
+  # Relabel configs (optional)
+  relabelConfigs: []
+  # Metric relabel configs (optional)
+  metricRelabelConfigs: []

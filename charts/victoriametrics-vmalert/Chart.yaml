@@ -6,5 +6,5 @@ apiVersion: v2
 name: victoriametrics-vmalert
 description: VMAlert for VictoriaMetrics/VictoriaLogs alerting and recording rules
 type: application
-version: 0.0.1
+version: 0.0.2
 appVersion: "1.0.0"

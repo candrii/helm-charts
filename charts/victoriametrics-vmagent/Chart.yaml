@@ -2,7 +2,7 @@ apiVersion: v2
 name: victoriametrics-vmagent
 description: VMAgent CRD for Victoria Metrics metrics collection agent
 type: application
-version: "0.0.1"
+version: "0.0.2"
 appVersion: "1.0.0"
 keywords:
   - monitoring

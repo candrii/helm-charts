@@ -1,0 +1,36 @@
+{{- if and .Values.enabled .Values.serviceScrape.enabled }}
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMServiceScrape
+metadata:
+  name: {{ .Values.name }}-vmagent
+  namespace: {{ .Values.namespace }}
+  labels:
+    app.kubernetes.io/name: vmagent
+    app.kubernetes.io/instance: {{ .Values.name }}
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: vmagent
+      app.kubernetes.io/instance: {{ .Values.name }}
+      managed-by: vm-operator
+  namespaceSelector:
+    matchNames:
+      - {{ .Values.namespace }}
+  endpoints:
+    - port: http
+      {{- with .Values.serviceScrape.interval }}
+      interval: {{ . }}
+      {{- end }}
+      {{- with .Values.serviceScrape.scrapeTimeout }}
+      scrapeTimeout: {{ . }}
+      {{- end }}
+      path: /metrics
+      {{- with .Values.serviceScrape.relabelConfigs }}
+      relabelConfigs:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.serviceScrape.metricRelabelConfigs }}
+      metricRelabelConfigs:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+{{- end }}
