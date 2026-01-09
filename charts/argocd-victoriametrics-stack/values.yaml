@@ -60,7 +60,7 @@ vlsingle:
   enabled: true
   chart:
     repoURL: oci://ghcr.io/candrii/charts/victoriametrics-vlsingle
-    version: "0.0.2"
+    version: "0.0.3"
     # Override chart name in child chart (removes victoriametrics prefix)
     nameOverride: vlsingle
   syncWave: "-1"
@@ -73,7 +73,7 @@ vmagent:
   enabled: true
   chart:
     repoURL: oci://ghcr.io/candrii/charts/victoriametrics-vmagent
-    version: "0.0.1"
+    version: "0.0.2"
     nameOverride: vmagent
   # Sync wave 0 - deploys after vmsingle (-1)
   syncWave: "0"
@@ -86,7 +86,7 @@ vmalert:
   enabled: false
   chart:
     repoURL: oci://ghcr.io/candrii/charts/victoriametrics-vmalert
-    version: "0.0.1"
+    version: "0.0.2"
     nameOverride: vmalert
   syncWave: "0"
 
@@ -98,7 +98,7 @@ vmauth:
   enabled: false
   chart:
     repoURL: oci://ghcr.io/victoriametrics/helm-charts/victoria-metrics-auth
-    version: "0.20.0"
+    version: "0.22.0"
     nameOverride: vmauth
   syncWave: "0"
 
