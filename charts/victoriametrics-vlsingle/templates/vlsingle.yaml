@@ -6,6 +6,10 @@ metadata:
   namespace: {{ .Values.namespace }}
 spec:
   retentionPeriod: {{ .Values.retentionPeriod | quote }}
+  {{- if .Values.extraArgs }}
+  extraArgs:
+    {{- toYaml .Values.extraArgs | nindent 4 }}
+  {{- end }}
   storage:
     {{- if .Values.storage.storageClassName }}
     storageClassName: {{ .Values.storage.storageClassName }}

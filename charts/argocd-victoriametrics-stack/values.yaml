@@ -60,7 +60,7 @@ vlsingle:
   enabled: true
   chart:
     repoURL: oci://ghcr.io/candrii/charts/victoriametrics-vlsingle
-    version: "0.0.3"
+    version: "0.0.4"
     # Override chart name in child chart (removes victoriametrics prefix)
     nameOverride: vlsingle
   syncWave: "-1"

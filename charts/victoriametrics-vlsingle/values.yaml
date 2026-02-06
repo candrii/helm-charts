@@ -15,6 +15,9 @@ namespace: monitoring
 # Data retention period (100y = ~forever)
 retentionPeriod: "100y"
 
+# Extra arguments passed to VLSingle binary
+extraArgs: {}
+
 # Storage configuration
 storage:
   size: 55Gi
