@@ -3,6 +3,23 @@ entries:
   argocd-victoriametrics-stack:
   - apiVersion: v2
     appVersion: 1.0.0
+    created: "2026-02-06T09:30:14.805203103Z"
+    description: ArgoCD Application to deploy Victoria Metrics stack with operator
+    digest: 7a9614f245e1758b1ec23ea43938587f462dcc7204b6922baa6aee7946f5d905
+    keywords:
+    - monitoring
+    - victoriametrics
+    - victorialogs
+    - argocd
+    - operator
+    - observability
+    name: argocd-victoriametrics-stack
+    type: application
+    urls:
+    - https://github.com/candrii/helm-charts/releases/download/argocd-victoriametrics-stack-1.2.2/argocd-victoriametrics-stack-1.2.2.tgz
+    version: 1.2.2
+  - apiVersion: v2
+    appVersion: 1.0.0
     created: "2026-01-09T06:27:11.352775495Z"
     description: ArgoCD Application to deploy Victoria Metrics stack with operator
     digest: 7363ce3c5d060e0c58062e3592e33037d2958d67c1e6b31efe9d20b6914a5f4a
@@ -74,6 +91,22 @@ entries:
     - https://github.com/candrii/helm-charts/releases/download/olmv1-0.1.0/olmv1-0.1.0.tgz
     version: 0.1.0
   victoriametrics-vlsingle:
+  - apiVersion: v2
+    appVersion: 1.0.0
+    created: "2026-02-06T09:30:15.002988748Z"
+    description: VLSingle CRD for Victoria Logs single instance deployment
+    digest: c8103e1b71f150bcbc7f953c61455eae22e024105745c36b33703486da84b051
+    keywords:
+    - monitoring
+    - victorialogs
+    - vlsingle
+    - logs
+    - observability
+    name: victoriametrics-vlsingle
+    type: application
+    urls:
+    - https://github.com/candrii/helm-charts/releases/download/victoriametrics-vlsingle-0.0.4/victoriametrics-vlsingle-0.0.4.tgz
+    version: 0.0.4
   - apiVersion: v2
     appVersion: 1.0.0
     created: "2026-01-09T06:24:27.724380028Z"
@@ -195,4 +228,4 @@ entries:
     urls:
     - https://github.com/candrii/helm-charts/releases/download/victoriametrics-vmsingle-0.0.3/victoriametrics-vmsingle-0.0.3.tgz
     version: 0.0.3
-generated: "2026-01-09T06:27:11.352799129Z"
+generated: "2026-02-06T09:30:15.003017129Z"
