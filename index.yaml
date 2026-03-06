@@ -133,6 +133,23 @@ entries:
     urls:
     - https://github.com/candrii/helm-charts/releases/download/teamcity-server-0.2.0/teamcity-server-0.2.0.tgz
     version: 0.2.0
+  teamcity-tests-agents:
+  - apiVersion: v2
+    appVersion: "2025.11"
+    created: "2026-03-06T07:32:01.545954869Z"
+    description: TeamCity test agents with auto-authorization
+    digest: 589f2a2e1445eea62618aff877ebd5ebd498bfb0534e8f628f910a5b166a14e9
+    keywords:
+    - teamcity
+    - ci
+    - cd
+    - jetbrains
+    - agent
+    name: teamcity-tests-agents
+    type: application
+    urls:
+    - https://github.com/candrii/helm-charts/releases/download/teamcity-tests-agents-0.2.0/teamcity-tests-agents-0.2.0.tgz
+    version: 0.2.0
   victoriametrics-vlsingle:
   - apiVersion: v2
     appVersion: 1.0.0
@@ -271,4 +288,4 @@ entries:
     urls:
     - https://github.com/candrii/helm-charts/releases/download/victoriametrics-vmsingle-0.0.3/victoriametrics-vmsingle-0.0.3.tgz
     version: 0.0.3
-generated: "2026-03-06T06:53:47.017343212Z"
+generated: "2026-03-06T07:32:01.545990475Z"
