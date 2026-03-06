@@ -1,0 +1,10 @@
+{{- if .Values.backendConfig.enabled }}
+apiVersion: cloud.google.com/v1beta1
+kind: BackendConfig
+metadata:
+  name: {{ include "teamcity-server.fullname" . }}
+  labels:
+    {{- include "teamcity-server.labels" . | nindent 4 }}
+spec:
+  timeoutSec: {{ .Values.backendConfig.timeoutSec | default 600 }}
+{{- end }}

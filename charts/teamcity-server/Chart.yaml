@@ -1,0 +1,11 @@
+apiVersion: v2
+name: teamcity-server
+description: JetBrains TeamCity CI/CD server
+type: application
+version: 0.2.0
+appVersion: "2025.11"
+keywords:
+  - teamcity
+  - ci
+  - cd
+  - jetbrains

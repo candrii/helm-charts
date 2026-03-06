@@ -1,0 +1,102 @@
+image:
+  repository: jetbrains/teamcity-server
+  pullPolicy: IfNotPresent
+  tag: ""
+
+persistence:
+  enabled: true
+  size: 350Gi
+  accessMode: ReadWriteOnce
+  storageClass: ""
+
+teamcity:
+  db:
+    password: ""
+    connectionString: "jdbc:postgresql://teamcity-postgresql:5432/teamcity_db"
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  create: true
+  automount: true
+  annotations: {}
+  name: ""
+
+podAnnotations: {}
+podLabels: {}
+
+podSecurityContext:
+  fsGroup: 1000
+  fsGroupChangePolicy: "OnRootMismatch"
+
+securityContext: {}
+
+service:
+  type: ClusterIP
+  port: 8111
+  annotations: {}
+
+# GKE BackendConfig for load balancer timeout
+backendConfig:
+  enabled: false
+  timeoutSec: 600
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+  hosts:
+    - host: chart-example.local
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+  tls: []
+
+# Global ingress for cross-region access
+globalIngress:
+  enabled: false
+  className: ""
+  annotations: {}
+  hosts:
+    - host: teamcity-secondary.example.local
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: []
+
+# GitHub webhook ingress
+webHookIngress:
+  enabled: false
+  className: ""
+  annotations: {}
+  host: ""
+
+resources: {}
+
+livenessProbe:
+  initialDelaySeconds: 60
+  httpGet:
+    path: /login.html
+    port: http
+
+readinessProbe:
+  initialDelaySeconds: 60
+  httpGet:
+    path: /login.html
+    port: http
+
+startupProbe:
+  httpGet:
+    path: /login.html
+    port: http
+  failureThreshold: 30
+  periodSeconds: 10
+
+volumes: []
+volumeMounts: []
+
+nodeSelector: {}
+tolerations: []
+affinity: {}
