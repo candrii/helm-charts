@@ -1,0 +1,12 @@
+apiVersion: v2
+name: teamcity-tests-agents
+description: TeamCity test agents with auto-authorization
+type: application
+version: 0.2.0
+appVersion: "2025.11"
+keywords:
+  - teamcity
+  - ci
+  - cd
+  - jetbrains
+  - agent

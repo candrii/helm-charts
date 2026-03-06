@@ -1,0 +1,41 @@
+teamcity:
+  serverUrl: "http://teamcity-server:8111"
+  machineUserSecret: teamcity-machine-user
+
+# Default agent pool for all agents unless overridden per-deployment
+default_agent_pool: "Default"
+
+deployments:
+  - name: agent1
+  - name: agent2
+
+image:
+  repository: image
+  pullPolicy: Always
+  tag: ""
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  create: true
+  automount: true
+  annotations: {}
+  name: ""
+
+podAnnotations: {}
+podLabels: {}
+podSecurityContext: {}
+securityContext: {}
+
+# Docker-in-Docker (DinD) configuration
+dind:
+  enabled: false
+
+resources: {}
+volumes: []
+volumeMounts: []
+nodeSelector: {}
+tolerations: []
+affinity: {}

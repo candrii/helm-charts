@@ -1,0 +1,93 @@
+{{ range .Values.deployments }}
+{{ $name := printf "%s-%s" (include "teamcity-tests-agents.fullname" $) .name }}
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ $name }}
+  labels:
+    {{- include "teamcity-tests-agents.labels" $ | nindent 4 }}
+    agent: {{ .name }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "teamcity-tests-agents.selectorLabels" $ | nindent 6 }}
+      agent: {{ .name }}
+  template:
+    metadata:
+      {{- with $.Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "teamcity-tests-agents.labels" $ | nindent 8 }}
+        {{- with $.Values.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+        agent: {{ .name }}
+    spec:
+      hostname: {{ .name }}
+      {{- with $.Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "teamcity-tests-agents.serviceAccountName" $ }}
+      securityContext:
+        {{- toYaml $.Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: teamcity-agent
+          securityContext:
+            {{- if $.Values.dind.enabled }}
+            privileged: true
+            {{- end }}
+            {{- if $.Values.securityContext }}
+            {{- toYaml $.Values.securityContext | nindent 12 }}
+            {{- end }}
+          image: "{{ $.Values.image.repository }}:{{ $.Values.image.tag | default $.Chart.AppVersion }}"
+          imagePullPolicy: {{ $.Values.image.pullPolicy }}
+          envFrom:
+            - secretRef:
+                name: {{ $name }}
+            - secretRef:
+                name: {{ $.Values.teamcity.machineUserSecret }}
+          livenessProbe:
+            {{- toYaml $.Values.livenessProbe | nindent 12 }}
+          readinessProbe:
+            {{- toYaml $.Values.readinessProbe | nindent 12 }}
+          resources:
+            {{- toYaml $.Values.resources | nindent 12 }}
+          lifecycle:
+            postStart:
+              exec:
+                command: ["srv/extra-scripts/poststart.sh"]
+            preStop:
+              exec:
+                command: ["/srv/extra-scripts/prestop.sh"]
+          volumeMounts:
+          - name: extra-scripts
+            mountPath: /srv/extra-scripts
+          {{- with $.Values.volumeMounts }}
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+      volumes:
+      - name: extra-scripts
+        secret:
+          defaultMode: 0755
+          secretName: {{ include "teamcity-tests-agents.fullname" $ }}-{{ .name }}-scripts
+      {{- with $.Values.volumes }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with $.Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with $.Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with $.Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+{{- end }}
