@@ -18,7 +18,7 @@ helm pull oci://ghcr.io/candrii/charts/victoriametrics-vmsingle --version 0.1.0
 
 | Chart | Version | Description |
 |-------|---------|-------------|
-| [argocd-victoriametrics-stack](charts/argocd-victoriametrics-stack/) | 1.2.4 | ArgoCD Application to deploy Victoria Metrics stack with operator |
+| [argocd-victoriametrics-stack](charts/argocd-victoriametrics-stack/) | 1.2.5 | ArgoCD Application to deploy Victoria Metrics stack with operator |
 | [grafana-operator-grafana](charts/grafana-operator-grafana/) | 0.2.1 | Grafana CRD for Grafana Operator - deploys Grafana instance via operator |
 | [olmv1](charts/olmv1/) | 0.1.3 | A Helm chart for OLMv1 |
 | [teamcity-server](charts/teamcity-server/) | 0.2.0 | JetBrains TeamCity CI/CD server |
