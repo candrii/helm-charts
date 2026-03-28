@@ -15,8 +15,6 @@ spec:
   {{- if .Values.notifier.url }}
   notifier:
     url: {{ .Values.notifier.url | quote }}
-  {{- else }}
-  notifiers: []
   {{- end }}
   evaluationInterval: {{ .Values.evaluationInterval | quote }}
   # Reference VMRule CRDs by label selector
@@ -33,4 +31,7 @@ spec:
   extraArgs:
     # Set default rule type to vlogs for VictoriaLogs rules
     rule.defaultRuleType: "vlogs"
+    {{- if not .Values.notifier.url }}
+    notifier.blackhole: "true"
+    {{- end }}
 {{- end }}
