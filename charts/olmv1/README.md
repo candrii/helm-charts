@@ -1,6 +1,6 @@
 # OLMv1 (Operator Lifecycle Manager v1)
 
-<!-- olmv1-upstream-commit: 15303e1b880c1bdb655bcabc4a506a62dada185b -->
+<!-- olmv1-upstream-commit: 614a5ea0e943be826a66b3113e643136c154c01a -->
 
 Helm chart for deploying [OLMv1](https://github.com/operator-framework/operator-controller) - the next generation Operator Lifecycle Manager for Kubernetes.
 
