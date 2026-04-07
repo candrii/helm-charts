@@ -66,6 +66,13 @@ deployment:
         containers:
           {{- range .Values.deployment.spec.template.spec.containers }}
           - name: {{ .name }}
+            {{- with .image }}
+            image: {{ . }}
+            {{- end }}
+            {{- with .ports }}
+            ports:
+              {{- toYaml . | nindent 14 }}
+            {{- end }}
             {{- with .securityContext }}
             securityContext:
               {{- toYaml . | nindent 14 }}
