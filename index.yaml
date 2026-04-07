@@ -140,6 +140,22 @@ entries:
   grafana-operator-grafana:
   - apiVersion: v2
     appVersion: 11.4.0
+    created: "2026-04-07T14:31:04.169752573Z"
+    description: Grafana CRD for Grafana Operator - deploys Grafana instance via operator
+    digest: 75c679787e132db34442117f13d42ba1d66f685b143cf8b2c5ff86ffdb91d0d0
+    keywords:
+    - grafana
+    - grafana-operator
+    - monitoring
+    - dashboards
+    - observability
+    name: grafana-operator-grafana
+    type: application
+    urls:
+    - https://github.com/candrii/helm-charts/releases/download/grafana-operator-grafana-0.2.3/grafana-operator-grafana-0.2.3.tgz
+    version: 0.2.3
+  - apiVersion: v2
+    appVersion: 11.4.0
     created: "2026-04-07T14:25:17.907731686Z"
     description: Grafana CRD for Grafana Operator - deploys Grafana instance via operator
     digest: 6d36bef7e681ac37551c8cccb493f8b8a270ee63c32cc0b721fac7ff302a05a2
@@ -402,4 +418,4 @@ entries:
     urls:
     - https://github.com/candrii/helm-charts/releases/download/victoriametrics-vmsingle-0.0.3/victoriametrics-vmsingle-0.0.3.tgz
     version: 0.0.3
-generated: "2026-04-07T14:25:17.907793859Z"
+generated: "2026-04-07T14:31:04.169807175Z"
