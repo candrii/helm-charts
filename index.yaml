@@ -188,6 +188,16 @@ entries:
     version: 0.2.1
   olmv1:
   - apiVersion: v2
+    created: "2026-04-15T19:15:16.453782324Z"
+    description: A Helm chart for OLMv1
+    digest: b991798a53c6cc9b8da51e938467c8423102c58fc5ee081534eef63079e9e508
+    icon: https://raw.githubusercontent.com/operator-framework/operator-framework.io/refs/heads/master/static/tile70x70.png
+    name: olmv1
+    type: application
+    urls:
+    - https://github.com/candrii/helm-charts/releases/download/olmv1-0.1.4/olmv1-0.1.4.tgz
+    version: 0.1.4
+  - apiVersion: v2
     created: "2026-03-28T21:51:21.799080039Z"
     description: A Helm chart for OLMv1
     digest: a2a0e4ae9046523d81eb72ac676dfda061109be2f8394fe0e350c5301ead5553
@@ -433,4 +443,4 @@ entries:
     urls:
     - https://github.com/candrii/helm-charts/releases/download/victoriametrics-vmsingle-0.0.3/victoriametrics-vmsingle-0.0.3.tgz
     version: 0.0.3
-generated: "2026-04-15T19:13:04.014253338Z"
+generated: "2026-04-15T19:15:16.453846645Z"
