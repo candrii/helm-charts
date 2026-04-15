@@ -61,6 +61,11 @@ spec:
             - name: teamcity-config
               mountPath: /opt/teamcity/conf/server.xml
               subPath: server.xml
+            {{- if .Values.teamcity.internalProperties }}
+            - name: teamcity-config
+              mountPath: /data/teamcity_server/datadir/config/internal.properties
+              subPath: internal.properties
+            {{- end }}
       volumes:
       {{- with .Values.volumes }}
         {{- toYaml . | nindent 8 }}

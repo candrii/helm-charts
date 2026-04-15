@@ -13,6 +13,9 @@ teamcity:
   db:
     password: ""
     connectionString: "jdbc:postgresql://teamcity-postgresql:5432/teamcity_db"
+  # TeamCity internal.properties key-value pairs
+  # Mounted at /data/teamcity_server/datadir/config/internal.properties
+  internalProperties: {}
 
 imagePullSecrets: []
 nameOverride: ""

@@ -6,6 +6,12 @@ metadata:
   labels:
     {{- include "teamcity-server.labels" . | nindent 4 }}
 data:
+{{- if .Values.teamcity.internalProperties }}
+  internal.properties: |
+    {{- range $key, $value := .Values.teamcity.internalProperties }}
+    {{ $key }}={{ $value }}
+    {{- end }}
+{{- end }}
   server.xml: |
     <?xml version='1.0' encoding='utf-8'?>
     <!--
