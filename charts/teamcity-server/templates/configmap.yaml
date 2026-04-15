@@ -12,6 +12,10 @@ data:
     {{ $key }}={{ $value }}
     {{- end }}
 {{- end }}
+{{- range $name, $content := .Values.teamcity.customFiles }}
+  {{ $name }}: |
+{{ $content | indent 4 }}
+{{- end }}
   server.xml: |
     <?xml version='1.0' encoding='utf-8'?>
     <!--

@@ -31,6 +31,25 @@ spec:
       serviceAccountName: {{ include "teamcity-server.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      {{- if .Values.teamcity.saml.corsFilter }}
+      initContainers:
+        - name: patch-saml-config
+          image: alpine:3
+          command:
+            - sh
+            - -c
+            - |
+              CONFIG="/data/teamcity_server/datadir/config/saml-plugin.config.json"
+              if [ -f "$CONFIG" ]; then
+                sed -i 's/"samlCorsFilter":false/"samlCorsFilter":true/g' "$CONFIG"
+                echo "Patched samlCorsFilter=true"
+              else
+                echo "SAML config not found, skipping"
+              fi
+          volumeMounts:
+            - name: {{ .Chart.Name }}-pvc
+              mountPath: /data/teamcity_server/datadir
+      {{- end }}
       containers:
         - name: {{ .Chart.Name }}
           securityContext:
@@ -65,6 +84,11 @@ spec:
             - name: teamcity-config
               mountPath: /data/teamcity_server/datadir/config/internal.properties
               subPath: internal.properties
+            {{- end }}
+            {{- range $name, $_ := .Values.teamcity.customFiles }}
+            - name: teamcity-config
+              mountPath: /data/teamcity_server/datadir/config/{{ $name }}
+              subPath: {{ $name }}
             {{- end }}
       volumes:
       {{- with .Values.volumes }}

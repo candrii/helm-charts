@@ -16,6 +16,14 @@ teamcity:
   # TeamCity internal.properties key-value pairs
   # Mounted at /data/teamcity_server/datadir/config/internal.properties
   internalProperties: {}
+  # Patch SAML plugin settings on startup (modifies saml-plugin.config.json on PVC)
+  saml:
+    corsFilter: false
+  # Extra files to mount into /data/teamcity_server/datadir/config/
+  # Each key becomes a filename, value is the file content
+  customFiles: {}
+  #   example.properties: |
+  #     key=value
 
 imagePullSecrets: []
 nameOverride: ""
