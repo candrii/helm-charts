@@ -2,7 +2,7 @@ apiVersion: v2
 name: teamcity-tests-agents
 description: TeamCity test agents with auto-authorization
 type: application
-version: 0.4.0
+version: 0.5.0
 appVersion: "2026.1"
 keywords:
   - teamcity
