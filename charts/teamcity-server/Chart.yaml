@@ -2,7 +2,7 @@ apiVersion: v2
 name: teamcity-server
 description: JetBrains TeamCity CI/CD server
 type: application
-version: 0.5.0
+version: 0.5.1
 appVersion: "2026.1"
 keywords:
   - teamcity

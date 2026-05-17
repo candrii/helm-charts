@@ -102,7 +102,7 @@ startupProbe:
   httpGet:
     path: /login.html
     port: http
-  failureThreshold: 30
+  failureThreshold: 180
   periodSeconds: 10
 
 volumes: []
