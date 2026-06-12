@@ -22,7 +22,7 @@ helm pull oci://ghcr.io/candrii/charts/victoriametrics-vmsingle --version 0.1.0
 | [grafana-operator-grafana](charts/grafana-operator-grafana/) | 0.2.3 | Grafana CRD for Grafana Operator - deploys Grafana instance via operator |
 | [olmv1](charts/olmv1/) | 0.1.6 | A Helm chart for OLMv1 |
 | [teamcity-server](charts/teamcity-server/) | 0.5.1 | JetBrains TeamCity CI/CD server |
-| [teamcity-tests-agents](charts/teamcity-tests-agents/) | 0.5.0 | TeamCity test agents with auto-authorization |
+| [teamcity-tests-agents](charts/teamcity-tests-agents/) | 0.6.0 | TeamCity test agents with auto-authorization |
 | [victoriametrics-vlsingle](charts/victoriametrics-vlsingle/) | 0.0.4 | VLSingle CRD for Victoria Logs single instance deployment |
 | [victoriametrics-vmagent](charts/victoriametrics-vmagent/) | 0.0.2 | VMAgent CRD for Victoria Metrics metrics collection agent |
 | [victoriametrics-vmalert](charts/victoriametrics-vmalert/) | 0.0.4 | VMAlert for VictoriaMetrics/VictoriaLogs alerting and recording rules |
