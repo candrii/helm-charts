@@ -438,6 +438,22 @@ entries:
   teamcity-tests-agents:
   - apiVersion: v2
     appVersion: "2026.1"
+    created: "2026-06-12T03:22:43.469567928Z"
+    description: TeamCity test agents with auto-authorization
+    digest: a39d953efc8065ab911b5590d5d72cd4dcc753b5fbe304e160a20242f539fcec
+    keywords:
+    - teamcity
+    - ci
+    - cd
+    - jetbrains
+    - agent
+    name: teamcity-tests-agents
+    type: application
+    urls:
+    - https://github.com/candrii/helm-charts/releases/download/teamcity-tests-agents-0.6.0/teamcity-tests-agents-0.6.0.tgz
+    version: 0.6.0
+  - apiVersion: v2
+    appVersion: "2026.1"
     created: "2026-05-17T23:38:21.038037647Z"
     description: TeamCity test agents with auto-authorization
     digest: eb4ca907743f948e5944bfa8e42c441fa37d767068c71bc044713fe304ee2ce1
@@ -658,4 +674,4 @@ entries:
     urls:
     - https://github.com/candrii/helm-charts/releases/download/victoriametrics-vmsingle-0.0.3/victoriametrics-vmsingle-0.0.3.tgz
     version: 0.0.3
-generated: "2026-06-10T12:22:56.392891143Z"
+generated: "2026-06-12T03:22:43.469620387Z"
