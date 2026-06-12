@@ -28,6 +28,9 @@ spec:
         agent: {{ .name }}
     spec:
       hostname: {{ .name }}
+      # preStop (agent shutdown + deregistration) must finish within this
+      # budget or the kubelet SIGKILLs mid-hook; default 30s is too short
+      terminationGracePeriodSeconds: {{ $.Values.terminationGracePeriodSeconds }}
       {{- with $.Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
@@ -60,7 +63,7 @@ spec:
           lifecycle:
             postStart:
               exec:
-                command: ["srv/extra-scripts/poststart.sh"]
+                command: ["/srv/extra-scripts/poststart.sh"]
             preStop:
               exec:
                 command: ["/srv/extra-scripts/prestop.sh"]

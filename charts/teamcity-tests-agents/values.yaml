@@ -5,6 +5,9 @@ teamcity:
 # Default agent pool for all agents unless overridden per-deployment
 default_agent_pool: "Default"
 
+# Must cover prestop.sh: agent stop + bounded 60s pid wait + deregistration
+terminationGracePeriodSeconds: 120
+
 deployments:
   - name: agent1
   - name: agent2
