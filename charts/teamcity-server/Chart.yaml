@@ -3,7 +3,7 @@ name: teamcity-server
 description: JetBrains TeamCity CI/CD server
 type: application
 version: 0.5.1
-appVersion: "2026.1"
+appVersion: "2026.2"
 keywords:
   - teamcity
   - ci
