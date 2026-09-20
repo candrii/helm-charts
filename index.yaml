@@ -3,6 +3,23 @@ entries:
   argocd-victoriametrics-stack:
   - apiVersion: v2
     appVersion: 1.0.0
+    created: "2026-09-20T16:42:36.543492787Z"
+    description: ArgoCD Application to deploy Victoria Metrics stack with operator
+    digest: 629a95253622deeaecd0c4147a9320ff4567aa274c8f7f8209aeb3f96f98f321
+    keywords:
+    - monitoring
+    - victoriametrics
+    - victorialogs
+    - argocd
+    - operator
+    - observability
+    name: argocd-victoriametrics-stack
+    type: application
+    urls:
+    - https://github.com/candrii/helm-charts/releases/download/argocd-victoriametrics-stack-1.2.14/argocd-victoriametrics-stack-1.2.14.tgz
+    version: 1.2.14
+  - apiVersion: v2
+    appVersion: 1.0.0
     created: "2026-06-10T12:22:56.392768004Z"
     description: ArgoCD Application to deploy Victoria Metrics stack with operator
     digest: ba67b5176dfd74cb7f09a7d51ae708e80d1034f6880fe67b4146a65356895f42
@@ -689,4 +706,4 @@ entries:
     urls:
     - https://github.com/candrii/helm-charts/releases/download/victoriametrics-vmsingle-0.0.3/victoriametrics-vmsingle-0.0.3.tgz
     version: 0.0.3
-generated: "2026-09-20T16:42:20.740671105Z"
+generated: "2026-09-20T16:42:36.543580881Z"
