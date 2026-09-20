@@ -361,6 +361,21 @@ entries:
     version: 0.1.0
   teamcity-server:
   - apiVersion: v2
+    appVersion: "2026.2"
+    created: "2026-09-20T16:42:20.740557583Z"
+    description: JetBrains TeamCity CI/CD server
+    digest: b50533bf19d526d1f9404a2aa832bc6bc5f639f6edfa953d979b15f74a1a1fc8
+    keywords:
+    - teamcity
+    - ci
+    - cd
+    - jetbrains
+    name: teamcity-server
+    type: application
+    urls:
+    - https://github.com/candrii/helm-charts/releases/download/teamcity-server-0.5.2/teamcity-server-0.5.2.tgz
+    version: 0.5.2
+  - apiVersion: v2
     appVersion: "2026.1"
     created: "2026-05-17T23:15:26.210873231Z"
     description: JetBrains TeamCity CI/CD server
@@ -674,4 +689,4 @@ entries:
     urls:
     - https://github.com/candrii/helm-charts/releases/download/victoriametrics-vmsingle-0.0.3/victoriametrics-vmsingle-0.0.3.tgz
     version: 0.0.3
-generated: "2026-06-12T03:22:43.469620387Z"
+generated: "2026-09-20T16:42:20.740671105Z"
