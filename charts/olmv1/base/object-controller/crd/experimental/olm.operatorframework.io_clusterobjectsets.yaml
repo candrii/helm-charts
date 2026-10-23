@@ -3,7 +3,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.20.1
+    controller-gen.kubebuilder.io/version: v0.22.0
     olm.operatorframework.io/generator: experimental
   name: clusterobjectsets.olm.operatorframework.io
 spec:
@@ -16,12 +16,30 @@ spec:
   scope: Cluster
   versions:
   - additionalPrinterColumns:
-    - jsonPath: .status.conditions[?(@.type=='Available')].status
-      name: Available
+    - jsonPath: .spec.group
+      name: Group
       type: string
-    - jsonPath: .status.conditions[?(@.type=='Progressing')].status
-      name: Progressing
+    - jsonPath: .spec.revision
+      name: Revision
+      type: integer
+    - jsonPath: .status.conditions[?(@.type=='Ready')].status
+      name: Ready
       type: string
+    - jsonPath: .status.conditions[?(@.type=='Ready')].reason
+      name: Reason
+      type: string
+    - jsonPath: .status.objectCounts.total
+      name: '#Total'
+      type: integer
+    - jsonPath: .status.objectCounts.present
+      name: '#Present'
+      type: integer
+    - jsonPath: .status.objectCounts.synced
+      name: '#Synced'
+      type: integer
+    - jsonPath: .status.objectCounts.ready
+      name: '#Ready'
+      type: integer
     - jsonPath: .metadata.creationTimestamp
       name: Age
       type: date
@@ -29,12 +47,15 @@ spec:
     schema:
       openAPIV3Schema:
         description: |-
-          ClusterObjectSet represents an immutable snapshot of Kubernetes objects
-          for a specific version of a ClusterExtension. Each revision contains objects
-          organized into phases that roll out sequentially. The same object can only be managed by a single revision
-          at a time. Ownership of objects is transitioned from one revision to the next as the extension is upgraded
-          or reconfigured. Once the latest revision has rolled out successfully, previous active revisions are archived for
-          posterity.
+          ClusterObjectSet represents an immutable snapshot of Kubernetes objects to
+          apply and manage on the cluster. Each revision contains objects organized into
+          phases that roll out sequentially. The same object can only be managed by a
+          single revision at a time. Ownership of objects is transitioned from one revision
+          to the next as new revisions are rolled out. Once the latest revision has rolled
+          out successfully, previous active revisions are archived for posterity.
+          Set metadata.name explicitly to <spec.group>-<spec.revision>, using decimal
+          notation without leading zeros. This ensures revision uniqueness within a group.
+          Name generation through metadata.generateName is not supported.
         properties:
           apiVersion:
             description: |-
@@ -58,13 +79,11 @@ spec:
             properties:
               collisionProtection:
                 description: |-
-                  collisionProtection specifies the default collision protection strategy for all objects
-                  in this revision. Individual phases or objects can override this value.
+                  collisionProtection is a required field that specifies the default collision protection
+                  strategy for all objects in this revision. Individual phases or objects can override this value.
 
-                  When set, this value is used as the default for any phase or object that does not
-                  explicitly specify its own collisionProtection.
-
-                  The resolution order is: object > phase > spec
+                  This value is used as the default for any phase or object that does not explicitly specify
+                  its own collisionProtection. The resolution order is: object > phase > spec.
                 enum:
                 - Prevent
                 - IfNoController
@@ -72,6 +91,22 @@ spec:
                 type: string
                 x-kubernetes-validations:
                 - message: collisionProtection is immutable
+                  rule: self == oldSelf
+              group:
+                description: |-
+                  group is a required, immutable identifier that links related revisions together.
+                  All revisions sharing the same group form an ordered sequence, regardless of owner references.
+                  The value must be 1 to 52 characters long, start with a lowercase letter,
+                  contain only lowercase letters, digits or hyphens, and end with a letter or digit.
+                maxLength: 52
+                minLength: 1
+                type: string
+                x-kubernetes-validations:
+                - message: group must start with a lowercase letter, contain only
+                    lowercase letters, digits or hyphens, and end with a letter or
+                    digit
+                  rule: self.matches('^[a-z]([a-z0-9-]*[a-z0-9])?$')
+                - message: group is immutable
                   rule: self == oldSelf
               lifecycleState:
                 description: |-
@@ -234,8 +269,7 @@ spec:
                         x-kubernetes-validations:
                         - message: exactly one of the fields in [object ref] must
                             be set
-                          rule: '[has(self.object),has(self.ref)].filter(x,x==true).size()
-                            == 1'
+                          rule: (has(self.object)?1:0)+(has(self.ref)?1:0) == 1
                       maxItems: 50
                       type: array
                   required:
@@ -273,6 +307,9 @@ spec:
                   a ConfigMap if that particular object does not pass the probe check.
 
                   The maximum number of probes is 20.
+
+                  Once set, even if empty, the progressionProbes field is immutable, as it is
+                  part of the immutable content of a revision.
                 items:
                   description: ProgressionProbe provides a custom probe definition,
                     consisting of an object selection method and assertions.
@@ -519,15 +556,18 @@ spec:
                 minItems: 1
                 type: array
                 x-kubernetes-list-type: atomic
+                x-kubernetes-validations:
+                - message: progressionProbes is immutable
+                  rule: self == oldSelf || oldSelf.size() == 0
               revision:
                 description: |-
-                  revision is a required, immutable sequence number representing a specific revision
-                  of the parent ClusterExtension.
+                  revision is a required, immutable sequence number identifying a specific
+                  ClusterObjectSet within a sequence of related revisions.
 
-                  The revision field must be a positive integer.
-                  Each ClusterObjectSet belonging to the same parent ClusterExtension must have a unique revision number.
-                  The revision number must always be the previous revision number plus one, or 1 for the first revision.
+                  The revision field must be an integer from 1 to 9999999999, inclusive.
+                  Each ClusterObjectSet in the same group must have a unique revision number.
                 format: int64
+                maximum: 9999999999
                 minimum: 1
                 type: integer
                 x-kubernetes-validations:
@@ -535,6 +575,7 @@ spec:
                   rule: self == oldSelf
             required:
             - collisionProtection
+            - group
             - lifecycleState
             - revision
             type: object
@@ -542,27 +583,37 @@ spec:
             description: status is optional and defines the observed state of the
               ClusterObjectSet.
             properties:
+              completedAt:
+                description: |-
+                  completedAt is the timestamp at which the revision was first observed to be
+                  ready, meaning it had successfully rolled out and all of its objects passed
+                  their probes. It is set once and is immutable thereafter.
+                format: date-time
+                type: string
+                x-kubernetes-validations:
+                - message: completedAt is immutable
+                  rule: self == oldSelf || oldSelf == null
               conditions:
                 description: |-
                   conditions is an optional list of status conditions describing the state of the
                   ClusterObjectSet.
 
-                  The Progressing condition represents whether the revision is actively rolling out:
-                    - When status is True and reason is RollingOut, the ClusterObjectSet rollout is actively making progress and is in transition.
-                    - When status is True and reason is Retrying, the ClusterObjectSet has encountered an error that could be resolved on subsequent reconciliation attempts.
-                    - When status is True and reason is Succeeded, the ClusterObjectSet has reached the desired state.
-                    - When status is False and reason is Blocked, the ClusterObjectSet has encountered an error that requires manual intervention for recovery.
-                    - When status is False and reason is Archived, the ClusterObjectSet is archived and not being actively reconciled.
+                  The Ready condition represents the state of the revision.
+                  True means all objects are at the desired state; False means one or more
+                  objects are not at the desired state; Unknown is the initial state, before
+                  the first reconciliation has evaluated the revision.
+                    - Unknown with reason Pending: the revision has not yet been evaluated (initial state, set when the condition is first created).
+                    - True with reason AllObjectsReady: the revision has rolled out and all objects are at the desired state.
+                    - False with reason ObjectsNotReady: one or more objects are still being applied or have not yet passed their readiness probes during rollout.
+                    - False with reason Superseded: one or more objects have been adopted by a newer revision of the object set.
+                    - False with reason ObjectCollision: one or more objects are controlled by another owner, or are unowned while collision protection prevents adoption, so this revision cannot take ownership of them.
+                    - False with reason PreconditionsNotMet: a precondition for applying the revision is not yet satisfied (a referenced Secret is mutable or has invalid or changed content, or a preflight dry-run was rejected, e.g. an immutable field, a conflicting object, or RBAC/dependency CRDs not yet propagated); the revision keeps retrying and recovers once the precondition is met.
+                    - False with reason InvalidSpecification: the revision spec is invalid (a malformed revision/phase object or progression probe) and requires a spec change to proceed.
+                    - False with reason ProgressDeadlineExceeded: the revision did not roll out within spec.progressDeadlineMinutes.
+                    - False with reason Archiving: the revision is being archived and its owned objects are still being torn down.
+                    - False with reason Archived: the revision has been archived and its objects have been torn down.
 
-                  The Available condition represents whether the revision has been successfully rolled out and is available:
-                    - When status is True and reason is ProbesSucceeded, the ClusterObjectSet has been successfully rolled out and all objects pass their readiness probes.
-                    - When status is False and reason is ProbeFailure, one or more objects are failing their readiness probes during rollout.
-                    - When status is Unknown and reason is Reconciling, the ClusterObjectSet has encountered an error that prevented it from observing the probes.
-                    - When status is Unknown and reason is Archived, the ClusterObjectSet has been archived and its objects have been torn down.
-                    - When status is Unknown and reason is Migrated, the ClusterObjectSet was migrated from an existing release and object status probe results have not yet been observed.
-
-                  The Succeeded condition represents whether the revision has successfully completed its rollout:
-                    - When status is True and reason is Succeeded, the ClusterObjectSet has successfully completed its rollout. This condition is set once and persists even if the revision later becomes unavailable.
+                  Rollout completion is recorded separately by status.completedAt.
                 items:
                   description: Condition contains details for one aspect of the current
                     state of this API Resource.
@@ -621,6 +672,51 @@ spec:
                 x-kubernetes-list-map-keys:
                 - type
                 x-kubernetes-list-type: map
+              objectCounts:
+                description: |-
+                  objectCounts reports aggregate object counts across all phases.
+                  Values are sums of the per-phase counts in observedPhases.
+                  It is omitted until counts have been computed; when present, all count
+                  fields are reported (including zeros).
+                properties:
+                  present:
+                    description: |-
+                      present is the number of objects in this phase that exist on the
+                      cluster. During reconcile, this counts objects that the controller
+                      has found or created. During teardown, this decrements toward zero
+                      as objects are deleted.
+                    format: int64
+                    maximum: 1000
+                    minimum: 0
+                    type: integer
+                  ready:
+                    description: |-
+                      ready is the number of objects in this phase that are synced
+                      and pass their assertions.
+                    format: int64
+                    maximum: 1000
+                    minimum: 0
+                    type: integer
+                  synced:
+                    description: |-
+                      synced is the number of objects in this phase whose cluster state
+                      matches the desired state.
+                    format: int64
+                    maximum: 1000
+                    minimum: 0
+                    type: integer
+                  total:
+                    description: total is the number of objects in this phase.
+                    format: int64
+                    maximum: 1000
+                    minimum: 0
+                    type: integer
+                required:
+                - present
+                - ready
+                - synced
+                - total
+                type: object
               observedPhases:
                 description: |-
                   observedPhases records the content hashes of resolved phases
@@ -640,6 +736,8 @@ spec:
                       minLength: 1
                       type: string
                       x-kubernetes-validations:
+                      - message: digest is immutable
+                        rule: self == oldSelf || oldSelf.size() == 0
                       - message: digest must be in the format '<algorithm>:<hex>'
                         rule: self.matches('^[a-z0-9]+:[a-f0-9]+$')
                     name:
@@ -652,6 +750,50 @@ spec:
                           characters and hyphens, and must start and end with an alphanumeric
                           character.
                         rule: '!format.dns1123Label().validate(self).hasValue()'
+                    objectCounts:
+                      description: |-
+                        objectCounts reports the number of objects in this phase by state.
+                        It is omitted until counts have been computed; when present, all count
+                        fields are reported (including zeros).
+                      properties:
+                        present:
+                          description: |-
+                            present is the number of objects in this phase that exist on the
+                            cluster. During reconcile, this counts objects that the controller
+                            has found or created. During teardown, this decrements toward zero
+                            as objects are deleted.
+                          format: int64
+                          maximum: 1000
+                          minimum: 0
+                          type: integer
+                        ready:
+                          description: |-
+                            ready is the number of objects in this phase that are synced
+                            and pass their assertions.
+                          format: int64
+                          maximum: 1000
+                          minimum: 0
+                          type: integer
+                        synced:
+                          description: |-
+                            synced is the number of objects in this phase whose cluster state
+                            matches the desired state.
+                          format: int64
+                          maximum: 1000
+                          minimum: 0
+                          type: integer
+                        total:
+                          description: total is the number of objects in this phase.
+                          format: int64
+                          maximum: 1000
+                          minimum: 0
+                          type: integer
+                      required:
+                      - present
+                      - ready
+                      - synced
+                      - total
+                      type: object
                   required:
                   - digest
                   - name
@@ -661,11 +803,18 @@ spec:
                 x-kubernetes-list-map-keys:
                 - name
                 x-kubernetes-list-type: map
-                x-kubernetes-validations:
-                - message: observedPhases is immutable
-                  rule: self == oldSelf || oldSelf.size() == 0
             type: object
+            x-kubernetes-validations:
+            - message: completedAt cannot be removed once set
+              rule: '!has(oldSelf.completedAt) || has(self.completedAt)'
+        required:
+        - spec
         type: object
+        x-kubernetes-validations:
+        - message: metadata.name must be <spec.group>-<spec.revision>
+          rule: self.metadata.name == '%s-%d'.format([self.spec.group, self.spec.revision])
+    selectableFields:
+    - jsonPath: .spec.group
     served: true
     storage: true
     subresources:
